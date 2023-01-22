@@ -33,7 +33,9 @@
 #include "i_system.h"
 
 #include "m_fixed.h"
-
+#ifdef SWITCH
+#include <limits.h>
+#endif
 /* ATSB 
 
 This is some preliminary ARM
@@ -54,6 +56,7 @@ fixed_t
 FixedMul
 (fixed_t    a,
 	fixed_t    b) {
+#ifndef SWITCH		
 #if defined __arm__ && !defined __APPLE__
 	asm(
 		"SMULL 	 R2, R3, R0, R1\n\t"
@@ -70,6 +73,9 @@ FixedMul
 		"ORR	 R0, R1, R2\n\t"
 		"BX		 LR"
 	);
+#else
+	return (fixed_t)(((long long)a * (long long)b) >> FRACBITS);
+#endif
 #else
 	return (fixed_t)(((long long)a * (long long)b) >> FRACBITS);
 #endif

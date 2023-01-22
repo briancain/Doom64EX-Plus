@@ -147,7 +147,7 @@ int w3svsnprintf(char* buf, size_t buf_len, const char* s, va_list args);
 int htoi(char* str);
 boolean fcmp(float f1, float f2);
 
-#if defined __linux__ || defined VITA
+#if defined __linux__ || defined VITA || defined(SWITCH)
 #define max(num1, num2) ((num1)>(num2)?(num1):(num2))
 #define min(num1, num2) ((num1)<(num2)?(num1):(num2))
 #endif

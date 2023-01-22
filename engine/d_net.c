@@ -49,7 +49,9 @@
 
 #include "i_video.h"
 #include "i_sdlinput.h"
-
+#ifdef SWITCH
+#include <limits.h>
+#endif
 #define FEATURE_MULTIPLAYER 1
 
 boolean    ShowGun = true;

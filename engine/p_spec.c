@@ -32,6 +32,9 @@
 //-----------------------------------------------------------------------------
 
 #include <stdlib.h>
+#ifdef SWITCH
+#include <limits.h>
+#endif
 
 #include "i_w3swrapper.h"
 #include "doomdef.h"

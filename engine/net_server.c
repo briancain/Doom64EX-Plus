@@ -25,7 +25,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
+#ifdef SWITCH
+#include <limits.h>
+#endif
 #include "doomdef.h"
 #include "doomstat.h"
 #include "i_system.h"
