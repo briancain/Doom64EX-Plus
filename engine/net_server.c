@@ -41,6 +41,7 @@
 #include "net_packet.h"
 #include "net_server.h"
 #include "net_structure.h"
+#include <limits.h>
 
 typedef enum
 {

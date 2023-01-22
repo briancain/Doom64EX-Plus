@@ -30,9 +30,7 @@
 //-----------------------------------------------------------------------------
 
 #include <stdlib.h>
-#ifdef SWITCH
 #include <limits.h>
-#endif
 #include "m_misc.h"
 #include "m_fixed.h"
 #include "doomdef.h"

@@ -31,9 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#ifdef SWITCH
 #include <limits.h>
-#endif
 #include "doomdef.h"
 #include "d_englsh.h"
 #include "sounds.h"
