@@ -43,6 +43,8 @@
 #include <SDL2/SDL.h>
 #endif
 
+#include <fmod.h>
+#include <fmod_errors.h>
 #include <fluidsynth.h>
 
 #include "doomtype.h"
@@ -100,6 +102,12 @@ CVAR_CMD(s_driver, sndio)
     CON_Warnf("Valid driver names: jack, alsa, oss, pulseaudio, coreaudio, dsound, portaudio, sndio, sndman, dart, file\n");
     CON_CvarSet(cvar->name, DEFAULT_FLUID_DRIVER);
 }
+
+// FMOD Studio
+FMOD_SYSTEM* fmod_studio_system;
+FMOD_SOUND* fmod_studio_sound;
+FMOD_CHANNEL** fmod_studio_channel = 0;
+FMOD_RESULT   fmod_studio_result;
 
 //
 // Mutex
@@ -282,6 +290,12 @@ static doomseq_t doomseq = { 0 };   // doom sequencer
 
 typedef void(*eventhandler)(doomseq_t*, channel_t*);
 typedef int(*signalhandler)(doomseq_t*);
+
+static void FMOD_ERROR_CHECK(FMOD_RESULT result) {
+    if (result != FMOD_OK) {
+        printf("FMOD Studio: %s", FMOD_ErrorString(result));
+    }
+}
 
 //
 // Seq_SetGain
@@ -961,25 +975,23 @@ static void Chan_RunSong(doomseq_t* seq, channel_t* chan, int msecs) {
 // Seq_RunSong
 //
 
-static void Seq_RunSong(doomseq_t* seq, int msecs) {
+static void Seq_RunSong(FMOD_SOUND* seq, int msecs) {
     int i;
-    channel_t* chan;
-
-    seq->playtime = msecs;
+    FMOD_CHANNELGROUP* chan;
 
     SEMAPHORE_LOCK()
         for (i = 0; i < MIDI_CHANNELS; i++) {
             chan = &playlist[i];
 
-            if (!chan->song) {
+            if (!chan) {
                 continue;
             }
 
-            if (chan->stop) {
-                Chan_RemoveTrackFromPlaylist(seq, chan);
+            if (chan) {
+                FMOD_Sound_Release(seq);
             }
             else {
-                Chan_RunSong(seq, chan, msecs);
+                FMOD_System_PlaySound(fmod_studio_system, seq, chan, 0, fmod_studio_channel);
             }
         }
     SEMAPHORE_UNLOCK()
@@ -1176,8 +1188,12 @@ static int SDLCALL Thread_PlayerHandler(void* param) {
 void I_InitSequencer(void) {
     int   sffound;
     char* sfpath;
+    void* extradriverdata = 0;
 
-    CON_DPrintf("--------Initializing Software Synthesizer--------\n");
+    CON_DPrintf("--------Initializing FMOD Studio--------\n");
+
+    FMOD_ERROR_CHECK(FMOD_System_Create(&fmod_studio_system, FMOD_VERSION));
+    FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 512, FMOD_INIT_NORMAL, NULL));
 
     //
     // init mutex
@@ -1361,7 +1377,11 @@ void I_UpdateChannel(int c, int volume, int pan) {
 // I_ShutdownSound
 // Shutdown sound when player exits the game / error occurs
 
-void I_ShutdownSound(void) {
+void I_ShutdownSound(void)
+{
+    FMOD_ERROR_CHECK(FMOD_System_Close(fmod_studio_system));
+    FMOD_ERROR_CHECK(FMOD_System_Release(fmod_studio_system));
+
     if (doomseq.synth) {
         Seq_Shutdown(&doomseq);
     }

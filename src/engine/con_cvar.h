@@ -29,12 +29,12 @@
 typedef struct cvar_s cvar_t;
 
 struct cvar_s {
-    int8_t*           name;
-    int8_t*           string;
+    const char*           name;
+    const char*           string;
     boolean        nonclient;
     void (*callback)(cvar_t*);
     float           value;
-    int8_t*           defvalue;
+    const char*           defvalue;
     struct cvar_s*  next;
 };
 
