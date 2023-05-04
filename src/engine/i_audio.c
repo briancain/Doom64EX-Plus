@@ -107,7 +107,7 @@ CVAR_CMD(s_driver, sndio)
 FMOD_SYSTEM *fmod_studio_system;
 
 FMOD_SOUND* fmod_studio_shotgun, * fmod_studio_plasmagun, * fmod_studio_bfg, * fmod_studio_sawup, * fmod_studio_sawidle, * fmod_studio_saw1,
-* fmod_studio_saw2;
+* fmod_studio_saw2, * fmod_studio_rocketlauncher;
 
 FMOD_CHANNEL *fmod_studio_channel = NULL;
 FMOD_RESULT   fmod_studio_result;
@@ -1214,6 +1214,7 @@ void I_InitSequencer(void) {
     FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_038.wav", FMOD_DEFAULT, 0, &fmod_studio_sawidle);
     FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_039.wav", FMOD_DEFAULT, 0, &fmod_studio_saw1);
     FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_040.wav", FMOD_DEFAULT, 0, &fmod_studio_saw2);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_041.wav", FMOD_DEFAULT, 0, &fmod_studio_rocketlauncher);
 
     //
     // init mutex
@@ -1578,4 +1579,8 @@ void SawCut1_StartSound(void) {
 
 void SawCut2_StartSound(void) {
     FMOD_System_PlaySound(fmod_studio_system, fmod_studio_saw2, master, 0, &fmod_studio_channel);
+}
+
+void RocketFire_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_rocketlauncher, master, 0, &fmod_studio_channel);
 }

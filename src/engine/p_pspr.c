@@ -526,6 +526,7 @@ void A_ChainSawReady(player_t* player, pspdef_t* psp) {
 
 void A_FireMissile(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
+	RocketFire_StartSound();
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_ROCKET);
 
 	player->recoilpitch = RECOILPITCH;
@@ -539,10 +540,8 @@ void A_FireMissile(player_t* player, pspdef_t* psp) {
 // A_FireBFG
 //
 
-//WAV file seems to be a little slower than the shot itself which now doesn't sync with the frames
 void A_FireBFG(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo] -= BFGCELLS;
-	BFG_StartSound();
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_BFG);
 }
 
@@ -782,7 +781,7 @@ void A_BFGSpray(mobj_t* mo) {
 //
 
 void A_BFGsound(player_t* player, pspdef_t* psp) {
-	S_StartSound(player->mo, sfx_bfg);
+	BFG_StartSound();
 }
 
 //
