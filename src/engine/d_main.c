@@ -505,10 +505,48 @@ static void Title_Stop(void) {
 }
 
 //
-// Legal_Start
+// FMOD_Start
 //
 
 CVAR_EXTERNAL(p_regionmode);
+
+static char* fmodpic = "FMOD_LOGO";
+static int fmod_x = 32;
+static int fmod_y = 72;
+
+static void FMOD_Start(void) {
+	int pllump;
+	int jllump;
+
+	pllump = W_CheckNumForName("FMOD_LOGO");
+	jllump = W_CheckNumForName("FMOD_LOGO");
+
+	if (pllump == -1 && jllump == -1) {
+		return;
+	}
+
+	if (p_regionmode.value >= 2 && jllump >= 0) {
+		fmodpic = "FMOD_LOGO";
+		fmod_x = 35;
+		fmod_y = 45;
+	}
+	else if (p_regionmode.value >= 2 && jllump == -1) {
+		CON_CvarSetValue(p_regionmode.name, 1);
+	}
+
+	if (p_regionmode.value == 1 && pllump >= 0) {
+		fmodpic = "FMOD_LOGO";
+		fmod_x = 35;
+		fmod_y = 50;
+	}
+	else if (p_regionmode.value == 1 && pllump == -1) {
+		CON_CvarSetValue(p_regionmode.name, 0);
+	}
+}
+
+//
+// Legal_Start
+//
 
 static char* legalpic = "USLEGAL";
 static int legal_x = 32;
@@ -542,6 +580,15 @@ static void Legal_Start(void) {
 	else if (p_regionmode.value == 1 && pllump == -1) {
 		CON_CvarSetValue(p_regionmode.name, 0);
 	}
+}
+
+//
+// FMOD_Drawer
+//
+
+static void FMOD_Drawer(void) {
+	GL_ClearView(0xFF000000);
+	Draw_GfxImage(fmod_x, fmod_y, fmodpic, WHITE, true);
 }
 
 //
@@ -666,7 +713,7 @@ static void Credits_Start(void) {
 	gamestate = GS_SKIPPABLE;
 }
 
-//
+//FMOD_Drawer
 // D_SplashScreen
 //
 
@@ -689,6 +736,33 @@ static void D_SplashScreen(void) {
 
 	if (skip != ga_title) {
 		G_RunTitleMap();
+		gameaction = ga_title;
+	}
+}
+
+//
+// D_FMODSplashScreen
+//
+
+static void D_FMODSplashScreen(void) {
+	int skip = 0;
+
+	if (gameaction || netgame) {
+		return;
+	}
+
+	screenalpha = 0xff;
+	allowmenu = false;
+	menuactive = false;
+
+	gamestate = GS_NONE;
+	pagetic = gametic;
+	gameaction = ga_nothing;
+
+	skip = D_MiniLoop(FMOD_Start, NULL, FMOD_Drawer, Legal_Ticker);
+
+	if (skip != ga_title) {
+		D_SplashScreen();
 		gameaction = ga_title;
 	}
 }
@@ -1005,6 +1079,9 @@ void D_DoomMain(void) {
 
 	if (!D_CheckDemo()) {
 		if (!autostart) {
+
+			// start FMOD Studio attribution splash
+			D_FMODSplashScreen();
 			// start legal screen and title map stuff
 			D_SplashScreen();
 		}

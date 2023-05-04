@@ -1198,7 +1198,8 @@ void I_InitSequencer(void) {
     char* sfpath;
     void* extradriverdata = 0;
 
-    CON_DPrintf("--------Initializing FMOD Studio--------\n");
+    I_Printf("\n--------Initializing FMOD Studio--------\n");
+    I_Printf("Made with FMOD Studio by Firelight Technologies Pty Ltd.\n\n");
 
     FMOD_ERROR_CHECK(FMOD_System_Create(&fmod_studio_system, FMOD_VERSION));
     FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 32, FMOD_INIT_NORMAL, NULL));
