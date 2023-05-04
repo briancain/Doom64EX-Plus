@@ -41,6 +41,8 @@
 
 #include <fcntl.h>
 #include <ctype.h>
+
+#include "i_audio.h"
 #include "doomdef.h"
 #include "i_video.h"
 #include "i_sdlinput.h"
@@ -3393,8 +3395,7 @@ static void M_SetCvar(cvar_t* cvar, float value) {
 	}
 
 	if (prevtic != gametic) {
-		S_StartSound(NULL,
-			currentMenu->menuitems[itemOn].status == 3 ? sfx_secmove : sfx_switch2);
+		//S_StartSound(NULL,currentMenu->menuitems[itemOn].status == 3 ? sfx_secmove : sfx_switch2); // I'll find a decent substitute for this
 
 		prevtic = gametic;
 	}
@@ -4282,7 +4283,7 @@ boolean M_Responder(event_t* ev) {
 	// Keys usable within menu
 	switch (ch) {
 	case KEY_DOWNARROW:
-		S_StartSound(NULL, sfx_switch1);
+		Switch1_StartSound();
 		if (currentMenu == &PasswordDef) {
 			itemOn = ((itemOn + 8) & 31);
 			return true;
@@ -4301,7 +4302,7 @@ boolean M_Responder(event_t* ev) {
 		}
 
 	case KEY_UPARROW:
-		S_StartSound(NULL, sfx_switch1);
+		Switch1_StartSound();
 		if (currentMenu == &PasswordDef) {
 			itemOn = ((itemOn - 8) & 31);
 			return true;
@@ -4321,7 +4322,7 @@ boolean M_Responder(event_t* ev) {
 
 	case KEY_LEFTARROW:
 		if (currentMenu == &PasswordDef) {
-			S_StartSound(NULL, sfx_switch1);
+			Switch1_StartSound();
 			do {
 				if (!itemOn) {
 					itemOn = currentMenu->numitems - 1;
@@ -4346,7 +4347,7 @@ boolean M_Responder(event_t* ev) {
 
 	case KEY_RIGHTARROW:
 		if (currentMenu == &PasswordDef) {
-			S_StartSound(NULL, sfx_switch1);
+			Switch1_StartSound();
 			do {
 				if (itemOn + 1 > currentMenu->numitems - 1) {
 					itemOn = 0;
@@ -4450,7 +4451,7 @@ boolean M_Responder(event_t* ev) {
 			if (currentMenu->menuitems[i].status != -1
 				&& currentMenu->menuitems[i].alphaKey == ch) {
 				itemOn = i;
-				S_StartSound(NULL, sfx_switch1);
+				Switch1_StartSound();
 				return true;
 			}
 		}
@@ -4458,7 +4459,7 @@ boolean M_Responder(event_t* ev) {
 			if (currentMenu->menuitems[i].status != -1
 				&& currentMenu->menuitems[i].alphaKey == ch) {
 				itemOn = i;
-				S_StartSound(NULL, sfx_switch1);
+				Switch1_StartSound();
 				return true;
 			}
 		}

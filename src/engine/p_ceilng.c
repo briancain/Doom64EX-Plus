@@ -25,6 +25,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "z_zone.h"
 #include "doomdef.h"
 #include "p_local.h"
@@ -56,7 +57,7 @@ void T_MoveCeiling(ceiling_t* ceiling) {
 
 		if (!ceiling->instant) {
 			if (!(leveltime & 7)) {
-				S_StartSound((mobj_t*)&ceiling->sector->soundorg, sfx_secmove);
+				SectorMove_StartSound();
 			}
 		}
 
@@ -86,7 +87,7 @@ void T_MoveCeiling(ceiling_t* ceiling) {
 
 		if (!ceiling->instant) {
 			if (!(leveltime & 7)) {
-				S_StartSound((mobj_t*)&ceiling->sector->soundorg, sfx_secmove);
+				SectorMove_StartSound();
 			}
 		}
 

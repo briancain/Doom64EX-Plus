@@ -27,6 +27,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "i_system.h"
 #include "z_zone.h"
 #include "m_random.h"
@@ -51,7 +52,7 @@ void T_PlatRaise(plat_t* plat) {
 		if (plat->type == raiseAndChange
 			|| plat->type == raiseToNearestAndChange) {
 			if (!(leveltime & 7)) {
-				S_StartSound((mobj_t*)&plat->sector->soundorg, sfx_secmove);
+				SectorMove_StartSound();
 			}
 		}
 
@@ -62,13 +63,13 @@ void T_PlatRaise(plat_t* plat) {
 		if (res == stop) {
 			plat->count = plat->wait;
 			plat->status = down;
-			S_StartSound((mobj_t*)&plat->sector->soundorg, sfx_pstart);
+			Lift_StartSound();
 		}
 		else {
 			if (res == pastdest) {
 				plat->count = plat->wait;
 				plat->status = waiting;
-				S_StartSound((mobj_t*)&plat->sector->soundorg, sfx_pstop);
+				Lift_Thud_StartSound();
 
 				switch (plat->type) {
 				case blazeDWUS:
@@ -93,7 +94,7 @@ void T_PlatRaise(plat_t* plat) {
 		if (res == pastdest) {
 			plat->count = plat->wait;
 			plat->status = waiting;
-			S_StartSound((mobj_t*)&plat->sector->soundorg, sfx_pstop);
+			Lift_Thud_StartSound();
 
 			switch (plat->type) {
 			case blazeUWDS:
@@ -115,7 +116,7 @@ void T_PlatRaise(plat_t* plat) {
 				plat->status = down;
 			}
 
-			S_StartSound((mobj_t*)&plat->sector->soundorg, sfx_pstart);
+			Lift_StartSound();
 		}
 
 	case in_stasis:
@@ -178,7 +179,7 @@ EV_DoPlat
 			// NO MORE DAMAGE, IF APPLICABLE
 			sec->special = 0;
 
-			S_StartSound((mobj_t*)&sec->soundorg, sfx_secmove);
+			SectorMove_StartSound();
 			break;
 
 		case raiseAndChange:
@@ -188,7 +189,7 @@ EV_DoPlat
 			plat->wait = 0;
 			plat->status = up;
 
-			S_StartSound((mobj_t*)&sec->soundorg, sfx_secmove);
+			SectorMove_StartSound();
 			break;
 
 		case downWaitUpStay:
@@ -203,7 +204,7 @@ EV_DoPlat
 			plat->high = sec->floorheight;
 			plat->wait = TICRATE * PLATWAIT;
 			plat->status = down;
-			S_StartSound((mobj_t*)&sec->soundorg, sfx_pstart);
+			Lift_StartSound();
 			break;
 
         case customDownUp:
@@ -216,7 +217,7 @@ EV_DoPlat
 			plat->high = sec->floorheight;
 			plat->wait = TICRATE * PLATWAIT;
 			plat->status = down;
-			S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+			Lift_StartSound();
 			break;
 
 		case upWaitDownStay:
@@ -229,7 +230,7 @@ EV_DoPlat
 			plat->high = P_FindHighestFloorSurrounding(sec);
 			plat->wait = TICRATE * PLATWAIT;
 			plat->status = up;
-			S_StartSound((mobj_t*)&sec->soundorg, sfx_pstart);
+			Lift_StartSound();
 			break;
 
 		case customUpDown:
@@ -242,7 +243,7 @@ EV_DoPlat
 			plat->high = sec->floorheight + (globalint * FRACUNIT);
 			plat->wait = TICRATE * PLATWAIT;
 			plat->status = up;
-			S_StartSound((mobj_t*)&sec->soundorg, sfx_pstart);
+			Lift_StartSound();
 			break;
 
 		case perpetualRaise:
@@ -262,7 +263,7 @@ EV_DoPlat
 			plat->wait = TICRATE * PLATWAIT;
 			plat->status = P_Random()&1;
 
-			S_StartSound((mobj_t*)&sec->soundorg, sfx_pstart);
+			Lift_StartSound();
 			break;
 		}
 		P_AddActivePlat(plat);

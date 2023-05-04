@@ -55,6 +55,12 @@ void SawCut1_StartSound(void);
 void SawCut2_StartSound(void);
 void RocketFire_StartSound(void);
 void Spawn_StartSound(void);
+void Lift_StartSound(void);
+void Lift_Thud_StartSound(void);
+void Door_Up_StartSound(void);
+void Door_Down_StartSound(void);
+void SectorMove_StartSound(void);
+void Switch1_StartSound(void);
 
 void I_InitSequencer(void);
 void I_ShutdownSound(void);

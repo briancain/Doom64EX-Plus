@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 
+#include "i_audio.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "i_system.h"
@@ -1956,7 +1957,7 @@ void P_UpdateSpecials(void) {
 					break;
 				}
 
-				S_StartSound((mobj_t*)buttonlist[i].soundorg, sfx_switch1);
+				Switch1_StartSound();
 				dmemset(&buttonlist[i], 0, sizeof(button_t));
 			}
 		}

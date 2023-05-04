@@ -26,6 +26,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "z_zone.h"
 #include "doomdef.h"
 #include "p_local.h"
@@ -57,12 +58,12 @@ void T_VerticalDoor(vldoor_t* door) {
 
 			case normal:
 				door->direction = -1; // time to go back down
-				S_StartSound((mobj_t*)&door->sector->soundorg, sfx_doordown);
+				Door_Down_StartSound();
 				break;
 
 			case close30ThenOpen:
 				door->direction = 1;
-				S_StartSound((mobj_t*)&door->sector->soundorg, sfx_doorup);
+				Door_Up_StartSound();
 				break;
 
 			default:
@@ -78,7 +79,7 @@ void T_VerticalDoor(vldoor_t* door) {
 			case raiseIn5Mins:
 				door->direction = 1;
 				door->type = normal;
-				S_StartSound((mobj_t*)&door->sector->soundorg, sfx_doorup);
+				Door_Up_StartSound();
 				break;
 
 			default:
@@ -124,7 +125,7 @@ void T_VerticalDoor(vldoor_t* door) {
 
 			default:
 				door->direction = 1;
-				S_StartSound((mobj_t*)&door->sector->soundorg, sfx_doorup);
+				Door_Up_StartSound();
 				break;
 			}
 		}
@@ -200,15 +201,13 @@ int EV_DoDoor(line_t* line, vldoor_e type) {
 			door->topheight = P_FindLowestCeilingSurrounding(sec);
 			door->topheight -= 4 * FRACUNIT;
 			door->direction = -1;
-			S_StartSound((mobj_t*)&door->sector->soundorg,
-				sfx_doordown);
+			Door_Down_StartSound();
 			break;
 
 		case close30ThenOpen:
 			door->topheight = sec->ceilingheight;
 			door->direction = -1;
-			S_StartSound((mobj_t*)&door->sector->soundorg,
-				sfx_doordown);
+			Door_Down_StartSound();
 			break;
 
 		case blazeRaise:
@@ -228,8 +227,7 @@ int EV_DoDoor(line_t* line, vldoor_e type) {
 			door->topheight = P_FindLowestCeilingSurrounding(sec);
 			door->topheight -= 4 * FRACUNIT;
 			if (door->topheight != sec->ceilingheight)
-				S_StartSound((mobj_t*)&door->sector->soundorg,
-					sfx_doorup);
+				Door_Up_StartSound();
 			break;
 
 		default:
@@ -281,7 +279,7 @@ void EV_VerticalDoor(line_t* line, mobj_t* thing) {
 		break;
 
 	default:    // NORMAL DOOR SOUND
-		S_StartSound((mobj_t*)&sec->soundorg, sfx_doorup);
+		Door_Up_StartSound();
 		break;
 	}
 

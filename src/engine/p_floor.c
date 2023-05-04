@@ -27,6 +27,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "z_zone.h"
 #include "doomdef.h"
 #include "p_local.h"
@@ -176,7 +177,7 @@ void T_MoveFloor(floormove_t* floor) {
 
 	if (!floor->instant) {
 		if (!(leveltime & 3)) {
-			S_StartSound((mobj_t*)&floor->sector->soundorg, sfx_secmove);
+			SectorMove_StartSound();
 		}
 	}
 
