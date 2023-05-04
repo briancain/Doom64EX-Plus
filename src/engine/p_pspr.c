@@ -30,6 +30,7 @@
 
 #include <math.h>
 
+#include "i_audio.h"
 #include "doomdef.h"
 #include "d_event.h"
 #include "m_fixed.h"
@@ -562,6 +563,7 @@ void A_PlasmaAnimate(player_t* player, pspdef_t* psp) {
 void A_FirePlasma(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
+	PlasmaGun_StartSound();
 	P_SetPsprite(player, ps_flash, S_NULL);
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_PLASMA);
 }
@@ -632,7 +634,7 @@ void A_FirePistol(player_t* player, pspdef_t* psp)
 void A_FireShotgun(player_t* player, pspdef_t* psp) {
 	int i;
 
-	S_StartSound(player->mo, sfx_shotgun);
+	Shotgun_StartSound();
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;

@@ -104,10 +104,13 @@ CVAR_CMD(s_driver, sndio)
 }
 
 // FMOD Studio
-FMOD_SYSTEM* fmod_studio_system;
-FMOD_SOUND* fmod_studio_sound;
-FMOD_CHANNEL** fmod_studio_channel = 0;
+FMOD_SYSTEM *fmod_studio_system;
+FMOD_SOUND *fmod_studio_shotgun, *fmod_studio_plasmagun;
+FMOD_CHANNEL *fmod_studio_channel = NULL;
 FMOD_RESULT   fmod_studio_result;
+FMOD_CHANNELGROUP *master;
+FMOD_BOOL IsPlaying;
+FMOD_BOOL Paused = FALSE;
 
 //
 // Mutex
@@ -975,23 +978,25 @@ static void Chan_RunSong(doomseq_t* seq, channel_t* chan, int msecs) {
 // Seq_RunSong
 //
 
-static void Seq_RunSong(FMOD_SOUND* seq, int msecs) {
+static void Seq_RunSong(doomseq_t* seq, int msecs) {
     int i;
-    FMOD_CHANNELGROUP* chan;
+    channel_t* chan;
+
+    seq->playtime = msecs;
 
     SEMAPHORE_LOCK()
         for (i = 0; i < MIDI_CHANNELS; i++) {
             chan = &playlist[i];
 
-            if (!chan) {
+            if (!chan->song) {
                 continue;
             }
 
-            if (chan) {
-                FMOD_Sound_Release(seq);
+            if (chan->stop) {
+                Chan_RemoveTrackFromPlaylist(seq, chan);
             }
             else {
-                FMOD_System_PlaySound(fmod_studio_system, seq, chan, 0, fmod_studio_channel);
+                Chan_RunSong(seq, chan, msecs);
             }
         }
     SEMAPHORE_UNLOCK()
@@ -1193,7 +1198,14 @@ void I_InitSequencer(void) {
     CON_DPrintf("--------Initializing FMOD Studio--------\n");
 
     FMOD_ERROR_CHECK(FMOD_System_Create(&fmod_studio_system, FMOD_VERSION));
-    FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 512, FMOD_INIT_NORMAL, NULL));
+    FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 32, FMOD_INIT_NORMAL, NULL));
+
+    FMOD_System_GetMasterChannelGroup(fmod_studio_system, &master);
+    //FMOD_ChannelGroup_SetVolume(master, 100);
+
+    // Setup external tracks
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_034.wav", FMOD_DEFAULT, 0, &fmod_studio_shotgun);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_035.wav", FMOD_DEFAULT, 0, &fmod_studio_plasmagun);
 
     //
     // init mutex
@@ -1521,36 +1533,21 @@ void I_StopSound(sndsrc_t* origin, int sfx_id) {
 //
 
 void I_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, int reverb) {
-    song_t* song;
-    channel_t* chan;
-    int i;
 
-    if (!seqready) {
-        return;
-    }
+}
 
-    if (doomseq.nsongs <= 0) {
-        return;
-    }
+/* BEWARE HERE BE DEMONZ!WORSE THAN THINE PITS OF HELL
+* FOR THOSE THAT SHALT NOT BE SCARED AWAY FROM SUCH
+* SHITTY CODE, I SHALL RAISE A TOAST IN THY HONOUR!
+* 
+* Basically, this is a giant fucking hack until I know how to use FMOD Studio in C :D
+* Enjoy the ride.
+*/
 
-    SEMAPHORE_LOCK()
-        song = &doomseq.songs[sfx_id];
-    for (i = 0; i < song->ntracks; i++) {
-        chan = Song_AddTrackToPlaylist(&doomseq, song, &song->tracks[i]);
+void Shotgun_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_shotgun, master, 0, &fmod_studio_channel);
+}
 
-        if (chan == NULL) {
-            break;
-        }
-
-        chan->volume = (float)volume;
-        chan->pan = (byte)(pan >> 1);
-        chan->origin = origin;
-        chan->depth = reverb;
-    }
-    SEMAPHORE_UNLOCK()
-
-        // [Immorpher] Re-establish linear sound interpolation
-        for (i = 16; i < MIDI_CHANNELS + 15; i++) {
-            fluid_synth_set_interp_method(doomseq.synth, i, FLUID_INTERP_LINEAR);
-        }
+void PlasmaGun_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_plasmagun, master, 0, &fmod_studio_channel);
 }

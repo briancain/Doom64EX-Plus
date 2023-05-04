@@ -28,6 +28,7 @@
 //-----------------------------------------------------------------------------
 
 #include <ctype.h>
+#include "i_audio.h"
 #include "i_system.h"
 #include "z_zone.h"
 #include "w_wad.h"
@@ -171,8 +172,8 @@ int F_Ticker(void) {
 	finalePal.b = MIN(finalePal.b += 2, 250);
 
 	if (!castdeath && castdying) {
-		S_StartSound(NULL, sfx_shotgun);
-		S_StartSound(NULL, mobjinfo[castorder[castnum].type].deathsound);
+		Shotgun_StartSound();
+		//I_StartSound(mobjinfo[castorder[castnum].type].deathsound);
 		caststate = &states[mobjinfo[castorder[castnum].type].deathstate];
 		casttics = caststate->info_tics;
 		castframes = 0;

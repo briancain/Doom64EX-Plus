@@ -33,6 +33,7 @@
 
 #include "m_random.h"
 #include "m_fixed.h"
+#include "i_audio.h"
 #include "i_system.h"
 #include "doomdef.h"
 #include "p_local.h"
@@ -969,7 +970,7 @@ void A_SPosAttack(mobj_t* actor) {
 		return;
 	}
 
-	S_StartSound(actor, sfx_shotgun);
+	Shotgun_StartSound();
 	A_FaceTarget(actor);
 	bangle = actor->angle;
 	slope = P_AimLineAttack(actor, bangle, 0, MISSILERANGE);

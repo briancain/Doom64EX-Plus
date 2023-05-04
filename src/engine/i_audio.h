@@ -23,6 +23,9 @@
 #ifndef __I_AUDIO_H__
 #define __I_AUDIO_H__
 
+#include <fmod_common.h>
+#include "m_fixed.h"
+
 // 20120107 bkw: Linux users can change the default FluidSynth backend here:
 #ifndef _WIN32
 #define DEFAULT_FLUID_DRIVER "sndio"
@@ -42,7 +45,8 @@ typedef struct {
 int I_GetMaxChannels(void);
 int I_GetVoiceCount(void);
 sndsrc_t* I_GetSoundSource(int c);
-
+void Shotgun_StartSound(void);
+void PlasmaGun_StartSound(void);
 void I_InitSequencer(void);
 void I_ShutdownSound(void);
 void I_UpdateChannel(int c, int volume, int pan);
