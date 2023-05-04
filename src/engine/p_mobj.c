@@ -27,6 +27,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "i_system.h"
 #include "z_zone.h"
 #include "m_fixed.h"
@@ -442,7 +443,7 @@ void P_NightmareRespawn(mobj_t* mobj) {
 	// initiate spawn sound
 	if (m_nospawnsound.value != 1)
 	{
-		S_StartSound(mo, sfx_spawn);
+		Spawn_StartSound();
 	}
 
 	if (mthing->options & MTF_AMBUSH) {
@@ -476,7 +477,7 @@ void P_RespawnSpecials(mobj_t* special) {
 
 	if (m_nospawnsound.value != 1)
 	{
-		S_StartSound(special, sfx_spawn);
+		Spawn_StartSound();
 	}
 }
 
@@ -904,7 +905,7 @@ int EV_SpawnMobjTemplate(line_t* line, boolean silent) {
 
 		if (!silent && m_nospawnsound.value != 1)
 		{
-			S_StartSound(mobj, sfx_spawn);
+			Spawn_StartSound();
 		}
 
 		if (mobj->type != MT_DEMON2) {

@@ -54,6 +54,7 @@ void SawDown_StartSound(void);
 void SawCut1_StartSound(void);
 void SawCut2_StartSound(void);
 void RocketFire_StartSound(void);
+void Spawn_StartSound(void);
 
 void I_InitSequencer(void);
 void I_ShutdownSound(void);
