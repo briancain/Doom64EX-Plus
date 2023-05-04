@@ -150,7 +150,7 @@ void P_BringUpWeapon(player_t* player) {
 	}
 
 	if (player->pendingweapon == wp_chainsaw) {
-		S_StartSound(player->mo, sfx_sawup);
+		SawUp_StartSound();
 	}
 	else if (player->pendingweapon == wp_plasma) {
 		S_StartSound(player->mo, sfx_electric);
@@ -487,10 +487,10 @@ void A_Saw (player_t *player, pspdef_t *psp) // 8001BC1C
 
 	if (!linetarget)
 	{
-		S_StartSound (player->mo, sfx_saw1);
+		SawCut1_StartSound();
 		return;
 	}
-	S_StartSound (player->mo, sfx_saw2);
+	SawCut2_StartSound();
 
 	/* turn to face target */
 	angle = R_PointToAngle2 (player->mo->x, player->mo->y, linetarget->x, linetarget->y);
@@ -516,7 +516,7 @@ void A_Saw (player_t *player, pspdef_t *psp) // 8001BC1C
 //
 
 void A_ChainSawReady(player_t* player, pspdef_t* psp) {
-	S_StartSound(player->mo, sfx_sawidle);
+	SawDown_StartSound();
 	A_WeaponReady(player, psp);
 }
 
@@ -538,8 +538,11 @@ void A_FireMissile(player_t* player, pspdef_t* psp) {
 //
 // A_FireBFG
 //
+
+//WAV file seems to be a little slower than the shot itself which now doesn't sync with the frames
 void A_FireBFG(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo] -= BFGCELLS;
+	BFG_StartSound();
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_BFG);
 }
 

@@ -105,7 +105,10 @@ CVAR_CMD(s_driver, sndio)
 
 // FMOD Studio
 FMOD_SYSTEM *fmod_studio_system;
-FMOD_SOUND *fmod_studio_shotgun, *fmod_studio_plasmagun;
+
+FMOD_SOUND* fmod_studio_shotgun, * fmod_studio_plasmagun, * fmod_studio_bfg, * fmod_studio_sawup, * fmod_studio_sawidle, * fmod_studio_saw1,
+* fmod_studio_saw2;
+
 FMOD_CHANNEL *fmod_studio_channel = NULL;
 FMOD_RESULT   fmod_studio_result;
 FMOD_CHANNELGROUP *master;
@@ -1206,6 +1209,11 @@ void I_InitSequencer(void) {
     // Setup external tracks
     FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_034.wav", FMOD_DEFAULT, 0, &fmod_studio_shotgun);
     FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_035.wav", FMOD_DEFAULT, 0, &fmod_studio_plasmagun);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_036.wav", FMOD_DEFAULT, 0, &fmod_studio_bfg);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_037.wav", FMOD_DEFAULT, 0, &fmod_studio_sawup);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_038.wav", FMOD_DEFAULT, 0, &fmod_studio_sawidle);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_039.wav", FMOD_DEFAULT, 0, &fmod_studio_saw1);
+    FMOD_System_CreateSound(fmod_studio_system, ".\\sfx\\SFX_040.wav", FMOD_DEFAULT, 0, &fmod_studio_saw2);
 
     //
     // init mutex
@@ -1550,4 +1558,24 @@ void Shotgun_StartSound(void) {
 
 void PlasmaGun_StartSound(void) {
     FMOD_System_PlaySound(fmod_studio_system, fmod_studio_plasmagun, master, 0, &fmod_studio_channel);
+}
+
+void BFG_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_bfg, master, 0, &fmod_studio_channel);
+}
+
+void SawUp_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sawup, master, 0, &fmod_studio_channel);
+}
+
+void SawDown_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sawidle, master, 0, &fmod_studio_channel);
+}
+
+void SawCut1_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_saw1, master, 0, &fmod_studio_channel);
+}
+
+void SawCut2_StartSound(void) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_saw2, master, 0, &fmod_studio_channel);
 }

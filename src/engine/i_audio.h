@@ -45,8 +45,15 @@ typedef struct {
 int I_GetMaxChannels(void);
 int I_GetVoiceCount(void);
 sndsrc_t* I_GetSoundSource(int c);
+
 void Shotgun_StartSound(void);
 void PlasmaGun_StartSound(void);
+void BFG_StartSound(void);
+void SawUp_StartSound(void);
+void SawDown_StartSound(void);
+void SawCut1_StartSound(void);
+void SawCut2_StartSound(void);
+
 void I_InitSequencer(void);
 void I_ShutdownSound(void);
 void I_UpdateChannel(int c, int volume, int pan);
