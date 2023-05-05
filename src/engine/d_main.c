@@ -510,7 +510,7 @@ static void Title_Stop(void) {
 
 CVAR_EXTERNAL(p_regionmode);
 
-static char* fmodpic = "FMOD_LOGO";
+static char* fmodpic = "FMOD";
 static int fmod_x = 32;
 static int fmod_y = 72;
 
@@ -518,15 +518,15 @@ static void FMOD_Start(void) {
 	int pllump;
 	int jllump;
 
-	pllump = W_CheckNumForName("FMOD_LOGO");
-	jllump = W_CheckNumForName("FMOD_LOGO");
+	pllump = W_CheckNumForName("FMOD");
+	jllump = W_CheckNumForName("FMOD");
 
 	if (pllump == -1 && jllump == -1) {
 		return;
 	}
 
 	if (p_regionmode.value >= 2 && jllump >= 0) {
-		fmodpic = "FMOD_LOGO";
+		fmodpic = "FMOD";
 		fmod_x = 35;
 		fmod_y = 45;
 	}
@@ -535,7 +535,7 @@ static void FMOD_Start(void) {
 	}
 
 	if (p_regionmode.value == 1 && pllump >= 0) {
-		fmodpic = "FMOD_LOGO";
+		fmodpic = "FMOD";
 		fmod_x = 35;
 		fmod_y = 50;
 	}
