@@ -771,7 +771,7 @@ void P_SpawnDelayTimer(line_t* line, void (*func)(void)) {
 void T_Quake(quake_t* quake) { // 0x8000EDE8
 	if ((--quake->tics) == 0)
 	{
-		S_StopSound(NULL, sfx_quake);
+		FMOD_StartSound(sfx_quake);
 		quakeviewx = 0;
 		quakeviewy = 0;
 		P_RemoveThinker(&quake->thinker);
@@ -794,7 +794,7 @@ static void P_SpawnQuake(int tics) {
 	quake->thinker.function.acp1 = (actionf_p1)T_Quake;
     quake->tics = tics;
 
-	S_StopSound(NULL, sfx_quake);
+	FMOD_StartSound(sfx_quake);
 }
 
 //
@@ -1752,7 +1752,7 @@ boolean P_UseSpecialLine(mobj_t* thing, line_t* line, int side) {
 			if (!player->cards[it_bluecard] && !player->cards[it_blueskull]) {
 				player->message = PD_BLUE;
 				player->messagepic = 0;
-				S_StartSound(thing, sfx_noway);
+				FMOD_StartSound(sfx_noway);
 				player->tryopen[tryopentype[0]] = true;
 				return false;
 			}
@@ -1761,7 +1761,7 @@ boolean P_UseSpecialLine(mobj_t* thing, line_t* line, int side) {
 			if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull]) {
 				player->message = PD_YELLOW;
 				player->messagepic = 1;
-				S_StartSound(thing, sfx_noway);
+				FMOD_StartSound(sfx_noway);
 				player->tryopen[tryopentype[1]] = true;
 				return false;
 			}
@@ -1770,7 +1770,7 @@ boolean P_UseSpecialLine(mobj_t* thing, line_t* line, int side) {
 			if (!player->cards[it_redcard] && !player->cards[it_redskull]) {
 				player->message = PD_RED;
 				player->messagepic = 2;
-				S_StartSound(thing, sfx_noway);
+				FMOD_StartSound(sfx_noway);
 				player->tryopen[tryopentype[2]] = true;
 				return false;
 			}
@@ -2180,11 +2180,11 @@ boolean P_StartSound(int index)
 	if (index >= NUMSFX)
 	{
 		//play custom sounds defined in pwads
-		int dm_start = W_GetNumForName("DM_START");
-		int dm_end = W_GetNumForName("DM_END");
+		int dm_start = W_GetNumForName("DS_START");
+		int dm_end = W_GetNumForName("DS_END");
 		if (index + dm_start >= dm_end - 1) return false;
 	}
-	S_StartSound(players[consoleplayer].mo, index);
+	FMOD_StartSound(index);
 	return true;
 }
 
@@ -2200,7 +2200,7 @@ boolean P_ChangeMusic(int index)
 		if (index + dm_start >= dm_end - 1) return false;
 	}
 	S_StopMusic();
-	S_StartMusic(index);
+	FMOD_StartMusic(index);
 	return true;
 }
 

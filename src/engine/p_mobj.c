@@ -141,8 +141,8 @@ void P_ExplodeMissile(mobj_t* mo) {
 	mo->flags &= ~MF_MISSILE;
 
 	if (mo->info->deathsound) {
-		S_StopSound(mo, 0);
-		S_StartSound(mo, mo->info->deathsound);
+		FMOD_StopSFXLoop();
+		FMOD_StartSFXLoop(mo->info->deathsound);
 	}
 }
 
@@ -173,7 +173,7 @@ void P_MissileHit(mobj_t* mo) {
 			P_SpawnBlood(mo->x, mo->y, mo->z, damage);
 		}
 		else {
-			S_StartSound(mo, sfx_darthit);
+			FMOD_StartSound(sfx_darthit);
 			P_SpawnPuff(mo->x, mo->y, mo->z);
 		}
 	}
@@ -1249,7 +1249,7 @@ void P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type) {
 	th = P_SpawnMobj(x, y, z, type);
 
 	if (th->info->seesound) {
-		S_StartSound(th, th->info->seesound);
+		FMOD_StartSound(th->info->seesound);
 	}
 
 	P_SetTarget(&th->target, source);
@@ -1299,7 +1299,7 @@ mobj_t* P_SpawnMissile(mobj_t* source, mobj_t* dest, mobjtype_t type,
 	th = P_SpawnMobj(x, y, z, type);
 
 	if (th->info->seesound) {
-		S_StartSound(th, th->info->seesound);
+		FMOD_StartSound(th->info->seesound);
 	}
 
 	P_SetTarget(&th->target, source);        // where it came from

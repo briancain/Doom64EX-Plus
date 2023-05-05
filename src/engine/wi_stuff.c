@@ -149,7 +149,7 @@ int WI_Ticker(void) {
 			if (playeringame[i]) {
 				if (player->cmd.buttons & BT_ATTACK) {
 					if (!player->attackdown) {
-						S_StartSound(NULL, sfx_explode);
+						FMOD_StartSound(sfx_explode);
 						wi_advance++;
 					}
 					player->attackdown = true;
@@ -160,7 +160,7 @@ int WI_Ticker(void) {
 
 				if (player->cmd.buttons & BT_USE) {
 					if (!player->usedown) {
-						S_StartSound(NULL, sfx_explode);
+						FMOD_StartSound(sfx_explode);
 						wi_advance++;
 					}
 					player->usedown = true;
@@ -190,7 +190,7 @@ int WI_Ticker(void) {
 	}
 
 	if (wi_advance == 3) {
-		//S_StartSound(NULL, sfx_explode);
+		FMOD_StartSound(sfx_explode);
 		wi_advance = 4;
 	}
 
@@ -221,7 +221,7 @@ int WI_Ticker(void) {
 	// counter ticks
 	switch (wi_stage) {
 	case 0:
-		S_StartSound(NULL, sfx_explode);
+		FMOD_StartSound(sfx_explode);
 		wi_stage = 1;
 		state = false;
 		break;
@@ -238,7 +238,7 @@ int WI_Ticker(void) {
 		}
 
 		if (next) {
-			S_StartSound(NULL, sfx_explode);
+			FMOD_StartSound(sfx_explode);
 
 			wi_counter = gametic;
 			wi_stage = 2;
@@ -259,7 +259,7 @@ int WI_Ticker(void) {
 		}
 
 		if (next) {
-			S_StartSound(NULL, sfx_explode);
+			FMOD_StartSound(sfx_explode);
 
 			wi_counter = gametic;
 			wi_stage = 3;
@@ -280,7 +280,7 @@ int WI_Ticker(void) {
 		}
 
 		if (next) {
-			S_StartSound(NULL, sfx_explode);
+			FMOD_StartSound(sfx_explode);
 
 			wi_counter = gametic;
 			wi_stage = 4;
@@ -291,7 +291,7 @@ int WI_Ticker(void) {
 
 	case 4:
 		if (gamemap > 80 && nextmap > 80) {
-			S_StartSound(NULL, sfx_explode);
+			FMOD_StartSound(sfx_explode);
 		}
 
 		wi_counter = gametic;
@@ -308,7 +308,7 @@ int WI_Ticker(void) {
 
 	// play sound as counter increases
 	if (state && !(gametic & 3)) {
-		S_StartSound(NULL, sfx_pistol);
+		FMOD_StartSound(sfx_pistol);
 	}
 
 	return 0;

@@ -132,7 +132,7 @@ void F_Start(void) {
 	finalePal.b = 0;
 
 	// hack - force-play seesound from first cast
-	S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
+	FMOD_StartSound(mobjinfo[castorder[castnum].type].seesound);
 }
 
 //
@@ -203,7 +203,7 @@ int F_Ticker(void) {
 		finalePal.b = 0;
 
 		if (mobjinfo[castorder[castnum].type].seesound) {
-			S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
+			FMOD_StartSound(mobjinfo[castorder[castnum].type].seesound);
 		}
 
 		caststate = &states[mobjinfo[castorder[castnum].type].seestate];
@@ -286,7 +286,7 @@ int F_Ticker(void) {
 			}
 
 			if (sound) {
-				S_StartSound(NULL, sound);
+				FMOD_StartSound(sound);
 			}
 		}
 	}

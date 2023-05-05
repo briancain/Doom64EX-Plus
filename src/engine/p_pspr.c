@@ -153,7 +153,7 @@ void P_BringUpWeapon(player_t* player) {
 		FMOD_StartSound(sfx_sawup);
 	}
 	else if (player->pendingweapon == wp_plasma) {
-		S_StartSound(player->mo, sfx_electric);
+		FMOD_StartSFXLoop(sfx_electric);
 	}
 
 	newstate = weaponinfo[player->pendingweapon].upstate;
@@ -369,7 +369,7 @@ void A_Lower(player_t* player, pspdef_t* psp) {
 	// [d64] stop plasma buzz
 	//
 	if (player->readyweapon == wp_plasma) {
-		S_StopSound(NULL, sfx_electric);
+		FMOD_StopSFXLoop();
 	}
 
 	/* */
@@ -458,7 +458,7 @@ void A_Punch(player_t* player, pspdef_t* psp) {
 
 	// turn to face target
 	if (linetarget) {
-		S_StartSound(player->mo, sfx_punch);
+		FMOD_StartSound(sfx_punch);
 		player->mo->angle = R_PointToAngle2(player->mo->x, player->mo->y,
 			linetarget->x, linetarget->y);
 	}
@@ -620,7 +620,7 @@ void P_GunShot(mobj_t* mo, boolean accurate) {
 //
 void A_FirePistol(player_t* player, pspdef_t* psp)
 {
-	S_StartSound(player->mo, sfx_pistol);
+	FMOD_StartSound(sfx_pistol);
 
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
@@ -659,7 +659,7 @@ void A_FireShotgun2(player_t* player, pspdef_t* psp) {
 	angle_t     angle;
 	int         damage;
 
-	S_StartSound(player->mo, sfx_sht2fire);
+	FMOD_StartSound(sfx_sht2fire);
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 	player->ammo[weaponinfo[player->readyweapon].ammo] -= 2;
 
@@ -693,7 +693,7 @@ void A_FireCGun(player_t* player, pspdef_t* psp) {
 		return;
 	}
 
-	S_StartSound(player->mo, sfx_pistol);
+	FMOD_StartSound(sfx_pistol);
 
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
@@ -729,7 +729,7 @@ void A_BFGFlash(mobj_t* actor) {
 			actor->target->player->bfgcount = 100;
 		}
 	}
-
+	FMOD_StartSound(sfx_bfgexp);
 	actor->alpha = 170;
 }
 
@@ -789,7 +789,7 @@ void A_BFGsound(player_t* player, pspdef_t* psp) {
 //
 
 void A_LoadShotgun2(player_t* player, pspdef_t* psp) {
-	S_StartSound(player->mo, sfx_sht2load1);
+	FMOD_StartSound(sfx_sht2load1);
 }
 
 //
@@ -797,7 +797,7 @@ void A_LoadShotgun2(player_t* player, pspdef_t* psp) {
 //
 
 void A_CloseShotgun2(player_t* player, pspdef_t* psp) {
-	S_StartSound(player->mo, sfx_sht2load2);
+	FMOD_StartSound(sfx_sht2load2);
 }
 
 //
@@ -1078,7 +1078,7 @@ void A_FireLaser(player_t* player, pspdef_t* psp) {
 		}
 	}
 
-	S_StartSound(player->mo, sfx_laser);
+	FMOD_StartSound(sfx_laser);
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 	P_SetPsprite(player, ps_flash, weaponinfo[player->readyweapon].flashstate);
 }

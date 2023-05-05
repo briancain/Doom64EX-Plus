@@ -2403,7 +2403,7 @@ static void M_PasswordSelect(void) {
 			G_DeferedInitNew(gameskill, gamemap);
 			doPassword = true;
 			currentMenu->lastOn = itemOn;
-			S_StartSound(NULL, sfx_pistol);
+			FMOD_StartSound(sfx_pistol);
 			M_ClearMenus();
 
 			return;
@@ -3395,7 +3395,7 @@ static void M_SetCvar(cvar_t* cvar, float value) {
 	}
 
 	if (prevtic != gametic) {
-		//S_StartSound(NULL,currentMenu->menuitems[itemOn].status == 3 ? sfx_secmove : sfx_switch2); // I'll find a decent substitute for this
+		FMOD_StartSound(currentMenu->menuitems[itemOn].status == 3 ? sfx_secmove : sfx_switch2); // I'll find a decent substitute for this
 
 		prevtic = gametic;
 	}
@@ -3482,7 +3482,7 @@ static void M_Return(int choice) {
 	if (currentMenu->prevMenu) {
 		menufadefunc = M_MenuFadeOut;
 		alphaprevmenu = true;
-		S_StartSound(NULL, sfx_pistol);
+		FMOD_StartSound(sfx_pistol);
 	}
 }
 
@@ -3840,7 +3840,7 @@ static boolean M_CursorHighlightItem(menu_t* menu) {
 void M_QuickSave(void)
 {
 	if (!usergame) {
-		S_StartSound(NULL, sfx_oof);
+		FMOD_StartSound(sfx_oof);
 		return;
 	}
 
@@ -4402,7 +4402,7 @@ boolean M_Responder(event_t* ev) {
 						currentMenu->menuitems[itemOn].routine(itemOn);
 					}
 
-					S_StartSound(NULL, sfx_pistol);
+					FMOD_StartSound(sfx_pistol);
 				}
 			}
 			return true;

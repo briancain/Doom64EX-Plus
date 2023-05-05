@@ -58,6 +58,8 @@
 
 // 20120203 villsa - cvar for soundfont location
 CVAR(s_soundfont, doomsnd.sf2);
+CVAR_EXTERNAL(s_sfxvol);
+CVAR_EXTERNAL(s_musvol);
 
 // 20120203 villsa - cvar for audio driver
 #ifdef _WIN32
@@ -105,8 +107,8 @@ CVAR_CMD(s_driver, sndio)
 
 // FMOD Studio
 FMOD_SYSTEM *fmod_studio_system;
-FMOD_SOUND* fmod_studio_sound[50];
-FMOD_CHANNEL *fmod_studio_channel = NULL;
+FMOD_SOUND* fmod_studio_sound[93], * fmod_studio_music[1];
+FMOD_CHANNEL* fmod_studio_channel = NULL, * fmod_studio_channel_loop = NULL;
 FMOD_RESULT   fmod_studio_result;
 FMOD_CHANNELGROUP *master;
 FMOD_CREATESOUNDEXINFO extinfo;
@@ -309,7 +311,8 @@ static void FMOD_ERROR_CHECK(FMOD_RESULT result) {
 //
 
 static void Seq_SetGain(doomseq_t* seq) {
-    fluid_synth_set_gain(seq->synth, seq->gain);
+    FMOD_Channel_SetLowPassGain(fmod_studio_channel, seq->gain);
+    FMOD_Channel_SetLowPassGain(fmod_studio_channel_loop, seq->gain);
 }
 
 //
@@ -357,12 +360,9 @@ static void Seq_SetStatus(doomseq_t* seq, int status) {
 // Should be set by the audio thread
 //
 
-static void Chan_SetMusicVolume(doomseq_t* seq, channel_t* chan) {
-    int vol;
-
-    vol = (int)((chan->volume * seq->musicvolume) / 127.0f);
-
-    fluid_synth_cc(seq->synth, chan->track->channel, 0x07, vol);
+static void Chan_SetMusicVolume(float volume) {
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(fmod_studio_system, &master));
+    FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(master, volume));
 }
 
 //
@@ -371,15 +371,9 @@ static void Chan_SetMusicVolume(doomseq_t* seq, channel_t* chan) {
 // Should be set by the audio thread
 //
 
-static void Chan_SetSoundVolume(doomseq_t* seq, channel_t* chan) {
-    int vol;
-    int pan;
-
-    vol = (int)((chan->volume * seq->soundvolume) / 127.0f);
-    pan = chan->pan;
-
-    fluid_synth_cc(seq->synth, chan->id, 0x07, vol);
-    fluid_synth_cc(seq->synth, chan->id, 0x0A, pan);
+static void Chan_SetSoundVolume(float volume) {
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(fmod_studio_system, &master));
+    FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(master, volume));
 }
 
 //
@@ -598,11 +592,11 @@ static void Event_ControlChange(doomseq_t* seq, channel_t* chan) {
     if (ctrl == 0x07) {  // update volume
         if (chan->song->type == 1) {
             chan->volume = ((float)val * seq->musicvolume) / 127.0f;
-            Chan_SetMusicVolume(seq, chan);
+            //Chan_SetMusicVolume(seq, chan);
         }
         else {
             chan->volume = ((float)val * chan->volume) / 127.0f;
-            Chan_SetSoundVolume(seq, chan);
+            //Chan_SetSoundVolume(seq, chan);
         }
     }
     else {
@@ -915,10 +909,10 @@ static void Chan_RunSong(doomseq_t* seq, channel_t* chan, int msecs) {
     while (chan->state != CHAN_STATE_ENDED) {
         if (chan->song->type == 0) {
             chan->volume = chan->basevol;
-            Chan_SetSoundVolume(seq, chan);
+           //Chan_SetSoundVolume(seq, chan);
         }
         else {
-            Chan_SetMusicVolume(seq, chan);
+            //Chan_SetMusicVolume(seq, chan);
         }
 
         //
@@ -1199,29 +1193,112 @@ void I_InitSequencer(void) {
     I_Printf("\n--------Initializing FMOD Studio--------\n");
     I_Printf("Made with FMOD Studio by Firelight Technologies Pty Ltd.\n\n");
 
+    FMOD_System_SetDSPBufferSize(fmod_studio_system, 1024, 128);
+
     FMOD_ERROR_CHECK(FMOD_System_Create(&fmod_studio_system, FMOD_VERSION));
     FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 512, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
 
     FMOD_System_GetMasterChannelGroup(fmod_studio_system, &master);
-    //FMOD_ChannelGroup_SetVolume(master, 100);
+
+    // Causes crackling..  no idea why yet
+    //Chan_SetMusicVolume(s_musvol.value);
+    //Chan_SetSoundVolume(s_sfxvol.value);
+
+    FMOD_System_CreateSound(fmod_studio_system, "./music/MUS_MAP01.wav", FMOD_LOOP_NORMAL, 0, &fmod_studio_music[1]);
     
     // Setup external tracks
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_034.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[0]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_035.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[1]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_036.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[2]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_037.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[3]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_038.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[4]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_039.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[5]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_040.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[6]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_041.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[7]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_042.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[8]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_045.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[9]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_046.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[10]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_047.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[11]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_048.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[12]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_049.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[13]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_050.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[14]);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_051.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[15]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_033.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[1]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_034.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[2]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_035.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[3]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_036.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[4]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_037.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[5]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_038.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[6]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_039.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[7]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_040.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[8]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_041.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[9]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_042.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[10]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_043.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[11]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_044.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[12]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_045.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[13]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_046.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[14]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_047.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[15]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_048.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[16]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_049.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[17]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_050.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[18]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_051.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[19]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_052.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[20]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_053.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[21]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_054.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[22]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_055.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[23]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_056.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[24]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_057.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[25]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_058.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[26]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_059.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[27]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_060.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[28]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_061.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[29]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_062.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[30]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_063.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[31]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_064.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[32]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_065.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[33]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_066.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[34]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_067.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[35]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_068.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[36]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_069.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[37]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_070.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[38]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_071.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[39]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_072.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[40]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_073.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[41]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_074.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[42]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_075.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[43]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_076.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[44]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_077.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[45]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_078.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[46]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_079.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[47]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_080.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[48]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_081.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[49]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_082.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[50]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_083.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[51]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_084.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[52]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_085.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[53]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_086.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[54]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_087.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[55]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_088.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[56]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_089.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[57]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_090.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[58]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_091.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[59]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_092.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[60]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_093.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[61]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_094.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[62]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_095.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[63]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_096.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[64]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_097.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[65]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_098.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[66]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_099.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[67]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_100.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[68]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_101.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[69]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_102.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[70]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_103.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[71]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_104.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[72]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_105.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[73]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_106.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[74]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_107.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[75]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_108.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[76]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_109.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[77]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_110.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[78]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_111.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[79]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_112.wav", FMOD_LOOP_NORMAL, 0, &fmod_studio_sound[80]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_113.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[81]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_114.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[82]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_115.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[83]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_116.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[84]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_117.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[85]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_118.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[86]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_119.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[87]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_120.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[88]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_121.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[89]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_122.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[90]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_123.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[91]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_0124.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[92]);
 
     //
     // init mutex
@@ -1552,17 +1629,29 @@ void I_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, int reverb)
 
 }
 
-/* BEWARE HERE BE DEMONZ!WORSE THAN THINE PITS OF HELL
-* FOR THOSE THAT SHALT NOT BE SCARED AWAY FROM SUCH
-* SHITTY CODE, I SHALL RAISE A TOAST IN THY HONOUR!
-* 
-* Basically, this is a giant fucking hack until I know how to use FMOD Studio in C :D
-* Enjoy the ride.
-*/
+// FMOD Studio SFX API
 
-// This will eventually be our main call
 int FMOD_StartSound(int sfx_id) {
     FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel);
 
     return sfx_id;
+}
+
+int FMOD_StartSFXLoop(int sfx_id) {
+    FMOD_Channel_SetVolume(fmod_studio_channel_loop, 20.0);
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel_loop);
+
+    return sfx_id;
+}
+
+int FMOD_StopSFXLoop(void) {
+    FMOD_Channel_Stop(fmod_studio_channel_loop);
+
+    return FMOD_ERROR_CHECK;
+}
+
+int FMOD_StartMusic(int mus_id) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_music[mus_id], master, 0, &fmod_studio_channel);
+
+    return mus_id;
 }

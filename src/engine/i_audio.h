@@ -45,7 +45,7 @@ typedef struct {
 
 // FMOD Studio
 extern FMOD_SYSTEM* fmod_studio_system;
-extern FMOD_SOUND* fmod_studio_sound[50];
+extern FMOD_SOUND* fmod_studio_sound[93];
 extern FMOD_CHANNEL* fmod_studio_channel;
 extern FMOD_RESULT   fmod_studio_result;
 extern FMOD_CHANNELGROUP* master;
@@ -55,6 +55,9 @@ int I_GetVoiceCount(void);
 sndsrc_t* I_GetSoundSource(int c);
 
 int FMOD_StartSound(int sfx_id);
+int FMOD_StartMusic(int mus_id);
+int FMOD_StartSFXLoop(int sfx_id);
+int FMOD_StopSFXLoop(void);
 
 void I_InitSequencer(void);
 void I_ShutdownSound(void);

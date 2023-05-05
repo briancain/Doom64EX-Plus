@@ -27,6 +27,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "doomstat.h"
 #include "z_zone.h"
 #include "p_local.h"
@@ -317,7 +318,7 @@ void P_Stop(void) {
 	//
 	// [d64] stop plasma buzz
 	//
-	S_StopSound(NULL, sfx_electric);
+	FMOD_StopSFXLoop();
 
 	for (i = 0; i < MAXPLAYERS; i++) {
 		// take away cards and stuff

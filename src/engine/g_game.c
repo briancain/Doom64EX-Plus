@@ -28,7 +28,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
-
+#include "i_audio.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "z_zone.h"
@@ -1298,7 +1298,7 @@ boolean G_CheckSpot(int playernum, mapthing_t* mthing) {
 	);
 
 	if (players[playernum].viewz != 1) {
-		S_StartSound(mo, sfx_telept);    // don't start sound on first frame
+		FMOD_StartSound(sfx_telept);    // don't start sound on first frame
 	}
 
 	return true;

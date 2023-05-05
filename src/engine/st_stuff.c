@@ -392,7 +392,7 @@ void ST_Ticker(void) {
 			}
 
 			if (flashCards[ind].doDraw && flashCards[ind].active) {
-				S_StartSound(NULL, sfx_itemup);
+				FMOD_StartSound(sfx_itemup);
 			}
 		}
 	}
@@ -1180,7 +1180,7 @@ void ST_AddChatMsg(char* msg, int player) {
 	stchat[st_chatcount].color = st_chatcolors[player];
 	st_chatcount = (st_chatcount + 1) % MAXCHATNODES;
 
-	S_StartSound(NULL, sfx_darthit);
+	FMOD_StartSound(sfx_darthit);
 	CON_Printf(WHITE, str);
 	CON_Printf(WHITE, "\n");
 }
