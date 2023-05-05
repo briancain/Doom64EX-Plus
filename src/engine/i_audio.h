@@ -49,6 +49,10 @@ extern FMOD_SOUND* fmod_studio_sound[93];
 extern FMOD_CHANNEL* fmod_studio_channel;
 extern FMOD_RESULT   fmod_studio_result;
 extern FMOD_CHANNELGROUP* master;
+extern FMOD_VECTOR fmod_vec_position;
+extern FMOD_VECTOR fmod_vec_velocity;
+extern FMOD_VECTOR fmod_vec_forward;
+extern FMOD_VECTOR fmod_vec_up;
 
 int I_GetMaxChannels(void);
 int I_GetVoiceCount(void);
