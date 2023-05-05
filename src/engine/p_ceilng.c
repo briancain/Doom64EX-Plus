@@ -57,7 +57,7 @@ void T_MoveCeiling(ceiling_t* ceiling) {
 
 		if (!ceiling->instant) {
 			if (!(leveltime & 7)) {
-				SectorMove_StartSound();
+				FMOD_StartSound(sfx_secmove);
 			}
 		}
 
@@ -87,7 +87,7 @@ void T_MoveCeiling(ceiling_t* ceiling) {
 
 		if (!ceiling->instant) {
 			if (!(leveltime & 7)) {
-				SectorMove_StartSound();
+				FMOD_StartSound(sfx_secmove);
 			}
 		}
 

@@ -26,6 +26,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "i_system.h"
 #include "doomdef.h"
 #include "p_local.h"
@@ -74,15 +75,15 @@ void P_ChangeSwitchTexture(line_t* line, int useAgain) {
 	int swx;
 
 	if (SPECIALMASK(line->special) == 52 || SPECIALMASK(line->special) == 124) {
-		sound = sfx_switch2;
+		sound = FMOD_StartSound(sfx_switch2);
 	}
 	else {
-		sound = sfx_switch1;
+		sound = FMOD_StartSound(sfx_switch1);
 	}
 
 	if (SWITCHMASK(line->flags) == ML_SWITCHX04) {
 
-		S_StartSound(buttonlist->soundorg, sound);
+		FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sound[sound], master, 0, &fmod_studio_channel);
 
 		swx = sides[line->sidenum[0]].bottomtexture;
 		sides[line->sidenum[0]].bottomtexture = ((swx - swx_start) ^ 1) + swx_start;
@@ -95,7 +96,7 @@ void P_ChangeSwitchTexture(line_t* line, int useAgain) {
 	}
 	else if (SWITCHMASK(line->flags) == ML_SWITCHX02) {
 
-		S_StartSound(buttonlist->soundorg, sound);
+		FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sound[sound], master, 0, &fmod_studio_channel);
 
 		swx = sides[line->sidenum[0]].toptexture;
 		sides[line->sidenum[0]].toptexture = ((swx - swx_start) ^ 1) + swx_start;
@@ -108,7 +109,7 @@ void P_ChangeSwitchTexture(line_t* line, int useAgain) {
 	}
 	else if (SWITCHMASK(line->flags) == (ML_SWITCHX02 | ML_SWITCHX04))
 	{
-		S_StartSound(buttonlist->soundorg, sound);
+		FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sound[sound], master, 0, &fmod_studio_channel);
 
 		swx = sides[line->sidenum[0]].midtexture;
 		sides[line->sidenum[0]].midtexture = ((swx - swx_start) ^ 1) + swx_start;

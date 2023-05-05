@@ -2375,7 +2375,7 @@ void M_DrawPassword(void) {
 }
 
 static void M_PasswordSelect(void) {
-	S_StartSound(NULL, sfx_switch2);
+	FMOD_StartSound(sfx_switch2);
 	passwordData[curPasswordSlot++] = (byte)itemOn;
 	if (curPasswordSlot > 15) {
 		static const char* hecticdemo = "rvnh3ct1cd3m0???";
@@ -2414,7 +2414,7 @@ static void M_PasswordSelect(void) {
 }
 
 static void M_PasswordDeSelect(void) {
-	S_StartSound(NULL, sfx_switch2);
+	FMOD_StartSound(sfx_switch2);
 	if (passwordData[curPasswordSlot] == 0xff) {
 		curPasswordSlot--;
 	}
@@ -2696,7 +2696,7 @@ void M_DoFeature(int choice) {
 		break;
 	}
 
-	S_StartSound(NULL, sfx_switch2);
+	FMOD_StartSound(sfx_switch2);
 }
 
 #if defined(_WIN32) && defined(USE_XINPUT)  // XINPUT
@@ -3455,7 +3455,7 @@ static void M_DoDefaults(int choice) {
 		GL_SetTextureFilter();
 	}
 
-	S_StartSound(NULL, sfx_switch2);
+	FMOD_StartSound(sfx_switch2);
 }
 
 //
@@ -3495,7 +3495,7 @@ static void M_ReturnInstant(void) {
 		currentMenu = currentMenu->prevMenu;
 		itemOn = currentMenu->lastOn;
 
-		S_StartSound(NULL, sfx_switch2);
+		FMOD_StartSound(sfx_switch2);
 	}
 	else {
 		M_ClearMenus();
@@ -4283,7 +4283,7 @@ boolean M_Responder(event_t* ev) {
 	// Keys usable within menu
 	switch (ch) {
 	case KEY_DOWNARROW:
-		Switch1_StartSound();
+		FMOD_StartSound(sfx_switch1);
 		if (currentMenu == &PasswordDef) {
 			itemOn = ((itemOn + 8) & 31);
 			return true;
@@ -4302,7 +4302,7 @@ boolean M_Responder(event_t* ev) {
 		}
 
 	case KEY_UPARROW:
-		Switch1_StartSound();
+		FMOD_StartSound(sfx_switch1);
 		if (currentMenu == &PasswordDef) {
 			itemOn = ((itemOn - 8) & 31);
 			return true;
@@ -4322,7 +4322,7 @@ boolean M_Responder(event_t* ev) {
 
 	case KEY_LEFTARROW:
 		if (currentMenu == &PasswordDef) {
-			Switch1_StartSound();
+			FMOD_StartSound(sfx_switch1);
 			do {
 				if (!itemOn) {
 					itemOn = currentMenu->numitems - 1;
@@ -4347,7 +4347,7 @@ boolean M_Responder(event_t* ev) {
 
 	case KEY_RIGHTARROW:
 		if (currentMenu == &PasswordDef) {
-			Switch1_StartSound();
+			FMOD_StartSound(sfx_switch1);
 			do {
 				if (itemOn + 1 > currentMenu->numitems - 1) {
 					itemOn = 0;
@@ -4451,7 +4451,7 @@ boolean M_Responder(event_t* ev) {
 			if (currentMenu->menuitems[i].status != -1
 				&& currentMenu->menuitems[i].alphaKey == ch) {
 				itemOn = i;
-				Switch1_StartSound();
+				FMOD_StartSound(sfx_switch1);
 				return true;
 			}
 		}
@@ -4459,7 +4459,7 @@ boolean M_Responder(event_t* ev) {
 			if (currentMenu->menuitems[i].status != -1
 				&& currentMenu->menuitems[i].alphaKey == ch) {
 				itemOn = i;
-				Switch1_StartSound();
+				FMOD_StartSound(sfx_switch1);
 				return true;
 			}
 		}

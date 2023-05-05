@@ -970,7 +970,7 @@ void A_SPosAttack(mobj_t* actor) {
 		return;
 	}
 
-	Shotgun_StartSound();
+	FMOD_StartSound(sfx_shotgun);
 	A_FaceTarget(actor);
 	bangle = actor->angle;
 	slope = P_AimLineAttack(actor, bangle, 0, MISSILERANGE);

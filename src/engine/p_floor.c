@@ -177,7 +177,7 @@ void T_MoveFloor(floormove_t* floor) {
 
 	if (!floor->instant) {
 		if (!(leveltime & 3)) {
-			SectorMove_StartSound();
+			FMOD_StartSound(sfx_secmove);
 		}
 	}
 

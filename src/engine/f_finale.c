@@ -172,7 +172,7 @@ int F_Ticker(void) {
 	finalePal.b = MIN(finalePal.b += 2, 250);
 
 	if (!castdeath && castdying) {
-		Shotgun_StartSound();
+		FMOD_StartSound(sfx_shotgun);
 		//I_StartSound(mobjinfo[castorder[castnum].type].deathsound);
 		caststate = &states[mobjinfo[castorder[castnum].type].deathstate];
 		casttics = caststate->info_tics;

@@ -150,7 +150,7 @@ void P_BringUpWeapon(player_t* player) {
 	}
 
 	if (player->pendingweapon == wp_chainsaw) {
-		SawUp_StartSound();
+		FMOD_StartSound(sfx_sawup);
 	}
 	else if (player->pendingweapon == wp_plasma) {
 		S_StartSound(player->mo, sfx_electric);
@@ -487,10 +487,10 @@ void A_Saw (player_t *player, pspdef_t *psp) // 8001BC1C
 
 	if (!linetarget)
 	{
-		SawCut1_StartSound();
+		FMOD_StartSound(sfx_saw1);
 		return;
 	}
-	SawCut2_StartSound();
+	FMOD_StartSound(sfx_saw2);
 
 	/* turn to face target */
 	angle = R_PointToAngle2 (player->mo->x, player->mo->y, linetarget->x, linetarget->y);
@@ -516,7 +516,7 @@ void A_Saw (player_t *player, pspdef_t *psp) // 8001BC1C
 //
 
 void A_ChainSawReady(player_t* player, pspdef_t* psp) {
-	SawDown_StartSound();
+	FMOD_StartSound(sfx_sawidle);
 	A_WeaponReady(player, psp);
 }
 
@@ -526,7 +526,7 @@ void A_ChainSawReady(player_t* player, pspdef_t* psp) {
 
 void A_FireMissile(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
-	RocketFire_StartSound();
+	FMOD_StartSound(sfx_missile);
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_ROCKET);
 
 	player->recoilpitch = RECOILPITCH;
@@ -565,7 +565,7 @@ void A_PlasmaAnimate(player_t* player, pspdef_t* psp) {
 void A_FirePlasma(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
-	PlasmaGun_StartSound();
+	FMOD_StartSound(sfx_plasma);
 	P_SetPsprite(player, ps_flash, S_NULL);
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_PLASMA);
 }
@@ -636,7 +636,7 @@ void A_FirePistol(player_t* player, pspdef_t* psp)
 void A_FireShotgun(player_t* player, pspdef_t* psp) {
 	int i;
 
-	Shotgun_StartSound();
+	FMOD_StartSound(sfx_shotgun);
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
@@ -781,7 +781,7 @@ void A_BFGSpray(mobj_t* mo) {
 //
 
 void A_BFGsound(player_t* player, pspdef_t* psp) {
-	BFG_StartSound();
+	FMOD_StartSound(sfx_bfg);
 }
 
 //

@@ -443,7 +443,7 @@ void P_NightmareRespawn(mobj_t* mobj) {
 	// initiate spawn sound
 	if (m_nospawnsound.value != 1)
 	{
-		Spawn_StartSound();
+		FMOD_StartSound(sfx_spawn);
 	}
 
 	if (mthing->options & MTF_AMBUSH) {
@@ -477,7 +477,7 @@ void P_RespawnSpecials(mobj_t* special) {
 
 	if (m_nospawnsound.value != 1)
 	{
-		Spawn_StartSound();
+		FMOD_StartSound(sfx_spawn);
 	}
 }
 
@@ -905,7 +905,7 @@ int EV_SpawnMobjTemplate(line_t* line, boolean silent) {
 
 		if (!silent && m_nospawnsound.value != 1)
 		{
-			Spawn_StartSound();
+			FMOD_StartSound(sfx_spawn);
 		}
 
 		if (mobj->type != MT_DEMON2) {

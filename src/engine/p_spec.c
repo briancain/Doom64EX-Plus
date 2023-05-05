@@ -1957,7 +1957,7 @@ void P_UpdateSpecials(void) {
 					break;
 				}
 
-				Switch1_StartSound();
+				FMOD_StartSound(sfx_switch1);
 				dmemset(&buttonlist[i], 0, sizeof(button_t));
 			}
 		}

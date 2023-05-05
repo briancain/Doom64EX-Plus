@@ -23,6 +23,7 @@
 #ifndef __I_AUDIO_H__
 #define __I_AUDIO_H__
 
+#include <fmod.h>
 #include <fmod_common.h>
 #include "m_fixed.h"
 
@@ -42,25 +43,18 @@ typedef struct {
     fixed_t z;
 } sndsrc_t;
 
+// FMOD Studio
+extern FMOD_SYSTEM* fmod_studio_system;
+extern FMOD_SOUND* fmod_studio_sound[50];
+extern FMOD_CHANNEL* fmod_studio_channel;
+extern FMOD_RESULT   fmod_studio_result;
+extern FMOD_CHANNELGROUP* master;
+
 int I_GetMaxChannels(void);
 int I_GetVoiceCount(void);
 sndsrc_t* I_GetSoundSource(int c);
 
-void Shotgun_StartSound(void);
-void PlasmaGun_StartSound(void);
-void BFG_StartSound(void);
-void SawUp_StartSound(void);
-void SawDown_StartSound(void);
-void SawCut1_StartSound(void);
-void SawCut2_StartSound(void);
-void RocketFire_StartSound(void);
-void Spawn_StartSound(void);
-void Lift_StartSound(void);
-void Lift_Thud_StartSound(void);
-void Door_Up_StartSound(void);
-void Door_Down_StartSound(void);
-void SectorMove_StartSound(void);
-void Switch1_StartSound(void);
+int FMOD_StartSound(int sfx_id);
 
 void I_InitSequencer(void);
 void I_ShutdownSound(void);

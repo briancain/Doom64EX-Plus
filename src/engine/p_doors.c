@@ -58,12 +58,12 @@ void T_VerticalDoor(vldoor_t* door) {
 
 			case normal:
 				door->direction = -1; // time to go back down
-				Door_Down_StartSound();
+				FMOD_StartSound(sfx_doordown);
 				break;
 
 			case close30ThenOpen:
 				door->direction = 1;
-				Door_Up_StartSound();
+				FMOD_StartSound(sfx_doorup);
 				break;
 
 			default:
@@ -79,7 +79,7 @@ void T_VerticalDoor(vldoor_t* door) {
 			case raiseIn5Mins:
 				door->direction = 1;
 				door->type = normal;
-				Door_Up_StartSound();
+				FMOD_StartSound(sfx_doorup);
 				break;
 
 			default:
@@ -125,7 +125,7 @@ void T_VerticalDoor(vldoor_t* door) {
 
 			default:
 				door->direction = 1;
-				Door_Up_StartSound();
+				FMOD_StartSound(sfx_doorup);
 				break;
 			}
 		}
@@ -201,13 +201,13 @@ int EV_DoDoor(line_t* line, vldoor_e type) {
 			door->topheight = P_FindLowestCeilingSurrounding(sec);
 			door->topheight -= 4 * FRACUNIT;
 			door->direction = -1;
-			Door_Down_StartSound();
+			FMOD_StartSound(sfx_doordown);
 			break;
 
 		case close30ThenOpen:
 			door->topheight = sec->ceilingheight;
 			door->direction = -1;
-			Door_Down_StartSound();
+			FMOD_StartSound(sfx_doordown);
 			break;
 
 		case blazeRaise:
@@ -227,7 +227,7 @@ int EV_DoDoor(line_t* line, vldoor_e type) {
 			door->topheight = P_FindLowestCeilingSurrounding(sec);
 			door->topheight -= 4 * FRACUNIT;
 			if (door->topheight != sec->ceilingheight)
-				Door_Up_StartSound();
+				FMOD_StartSound(sfx_doorup);
 			break;
 
 		default:
@@ -279,7 +279,7 @@ void EV_VerticalDoor(line_t* line, mobj_t* thing) {
 		break;
 
 	default:    // NORMAL DOOR SOUND
-		Door_Up_StartSound();
+		FMOD_StartSound(sfx_doorup);
 		break;
 	}
 

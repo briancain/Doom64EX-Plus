@@ -105,11 +105,7 @@ CVAR_CMD(s_driver, sndio)
 
 // FMOD Studio
 FMOD_SYSTEM *fmod_studio_system;
-
-FMOD_SOUND* fmod_studio_shotgun, * fmod_studio_plasmagun, * fmod_studio_bfg, * fmod_studio_sawup, * fmod_studio_sawidle, * fmod_studio_saw1,
-* fmod_studio_saw2, * fmod_studio_rocketlauncher, * fmod_studio_spawn, * fmod_studio_lift, * fmod_studio_lift_thud, * fmod_studio_doorup,
-* fmod_studio_doordown, * fmod_studio_sectormove, * fmod_studio_switch1;
-
+FMOD_SOUND* fmod_studio_sound[50];
 FMOD_CHANNEL *fmod_studio_channel = NULL;
 FMOD_RESULT   fmod_studio_result;
 FMOD_CHANNELGROUP *master;
@@ -1204,27 +1200,28 @@ void I_InitSequencer(void) {
     I_Printf("Made with FMOD Studio by Firelight Technologies Pty Ltd.\n\n");
 
     FMOD_ERROR_CHECK(FMOD_System_Create(&fmod_studio_system, FMOD_VERSION));
-    FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 1024, FMOD_INIT_NORMAL, NULL));
+    FMOD_ERROR_CHECK(FMOD_System_Init(fmod_studio_system, 512, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
 
     FMOD_System_GetMasterChannelGroup(fmod_studio_system, &master);
     //FMOD_ChannelGroup_SetVolume(master, 100);
     
     // Setup external tracks
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_034.wav", FMOD_DEFAULT, 0, &fmod_studio_shotgun);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_035.wav", FMOD_DEFAULT, 0, &fmod_studio_plasmagun);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_036.wav", FMOD_DEFAULT, 0, &fmod_studio_bfg);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_037.wav", FMOD_DEFAULT, 0, &fmod_studio_sawup);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_038.wav", FMOD_DEFAULT, 0, &fmod_studio_sawidle);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_039.wav", FMOD_DEFAULT, 0, &fmod_studio_saw1);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_040.wav", FMOD_DEFAULT, 0, &fmod_studio_saw2);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_041.wav", FMOD_DEFAULT, 0, &fmod_studio_rocketlauncher);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_042.wav", FMOD_DEFAULT, 0, &fmod_studio_spawn);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_045.wav", FMOD_DEFAULT, 0, &fmod_studio_lift);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_046.wav", FMOD_DEFAULT, 0, &fmod_studio_lift_thud);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_047.wav", FMOD_DEFAULT, 0, &fmod_studio_doorup);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_048.wav", FMOD_DEFAULT, 0, &fmod_studio_doordown);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_049.wav", FMOD_DEFAULT, 0, &fmod_studio_sectormove);
-    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_050.wav", FMOD_DEFAULT, 0, &fmod_studio_switch1);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_034.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[0]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_035.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[1]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_036.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[2]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_037.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[3]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_038.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[4]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_039.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[5]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_040.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[6]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_041.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[7]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_042.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[8]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_045.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[9]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_046.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[10]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_047.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[11]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_048.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[12]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_049.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[13]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_050.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[14]);
+    FMOD_System_CreateSound(fmod_studio_system, "./sfx/SFX_051.wav", FMOD_DEFAULT, 0, &fmod_studio_sound[15]);
 
     //
     // init mutex
@@ -1563,62 +1560,9 @@ void I_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, int reverb)
 * Enjoy the ride.
 */
 
-void Shotgun_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_shotgun, master, 0, &fmod_studio_channel);
-}
+// This will eventually be our main call
+int FMOD_StartSound(int sfx_id) {
+    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel);
 
-void PlasmaGun_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_plasmagun, master, 0, &fmod_studio_channel);
-}
-
-void BFG_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_bfg, master, 0, &fmod_studio_channel);
-}
-
-void SawUp_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sawup, master, 0, &fmod_studio_channel);
-}
-
-void SawDown_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sawidle, master, 0, &fmod_studio_channel);
-}
-
-void SawCut1_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_saw1, master, 0, &fmod_studio_channel);
-}
-
-void SawCut2_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_saw2, master, 0, &fmod_studio_channel);
-}
-
-void RocketFire_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_rocketlauncher, master, 0, &fmod_studio_channel);
-}
-
-void Spawn_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_spawn, master, 0, &fmod_studio_channel);
-}
-
-void Lift_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_lift, master, 0, &fmod_studio_channel);
-}
-
-void Lift_Thud_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_lift_thud, master, 0, &fmod_studio_channel);
-}
-
-void Door_Up_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_doorup, master, 0, &fmod_studio_channel);
-}
-
-void Door_Down_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_doordown, master, 0, &fmod_studio_channel);
-}
-
-void SectorMove_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_sectormove, master, 0, &fmod_studio_channel);
-}
-
-void Switch1_StartSound(void) {
-    FMOD_System_PlaySound(fmod_studio_system, fmod_studio_switch1, master, 0, &fmod_studio_channel);
+    return sfx_id;
 }

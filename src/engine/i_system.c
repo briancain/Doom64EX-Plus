@@ -179,6 +179,8 @@ boolean I_StartDisplay(void) {
 	start_displaytime = SDL_GetTicks();
 	InDisplay = true;
 
+	FMOD_System_Update(fmod_studio_system);
+
 	return true;
 }
 

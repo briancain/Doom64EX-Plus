@@ -29,12 +29,6 @@
 //
 
 typedef enum {
-	sfx_None,
-	sfx_punch,      //punch
-	sfx_spawn,      //spawn
-	sfx_explode,    //explode
-	sfx_implod,     //impact
-	sfx_pistol,     //pistol
 	sfx_shotgun,    //shotgun
 	sfx_plasma,     //plasma
 	sfx_bfg,        //bfg
@@ -43,7 +37,7 @@ typedef enum {
 	sfx_saw1,       //saw1
 	sfx_saw2,       //saw2
 	sfx_missile,    //missile
-	sfx_bfgexp,     //bfgexplode
+	sfx_spawn,      //spawn
 	sfx_pstart,     //platup
 	sfx_pstop,      //platdown
 	sfx_doorup,     //doorup
@@ -51,6 +45,12 @@ typedef enum {
 	sfx_secmove,    //secmove
 	sfx_switch1,    //switch1
 	sfx_switch2,    //switch2
+	sfx_None,
+	sfx_punch,      //punch
+	sfx_explode,    //explode
+	sfx_implod,     //impact
+	sfx_pistol,     //pistol
+	sfx_bfgexp,     //bfgexplode
 	sfx_itemup,     //itemup
 	sfx_sgcock,     //sgcock
 	sfx_oof,        //oof
