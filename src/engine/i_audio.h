@@ -44,7 +44,11 @@ typedef struct {
 } sndsrc_t;
 
 // FMOD Studio
-extern FMOD_SYSTEM* fmod_studio_system;
+struct Sound {
+    FMOD_SYSTEM* fmod_studio_system;
+};
+
+struct Sound sound;
 extern FMOD_SOUND* fmod_studio_sound[93];
 extern FMOD_CHANNEL* fmod_studio_channel;
 extern FMOD_RESULT   fmod_studio_result;

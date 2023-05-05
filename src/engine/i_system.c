@@ -179,8 +179,8 @@ boolean I_StartDisplay(void) {
 	start_displaytime = SDL_GetTicks();
 	InDisplay = true;
 
-	FMOD_System_Set3DListenerAttributes(fmod_studio_system, 0, &fmod_vec_position, &fmod_vec_velocity, &fmod_vec_forward, &fmod_vec_up);
-	FMOD_System_Update(fmod_studio_system);
+	FMOD_System_Set3DListenerAttributes(sound.fmod_studio_system, 0, &fmod_vec_position, &fmod_vec_velocity, &fmod_vec_forward, &fmod_vec_up);
+	FMOD_System_Update(sound.fmod_studio_system);
 
 	return true;
 }
