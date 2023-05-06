@@ -565,6 +565,10 @@ void A_PlasmaAnimate(player_t* player, pspdef_t* psp) {
 void A_FirePlasma(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
+	// this is here because the plasma ball explosion and the plasma fire
+	// conflicted and cut off one another, even with NO_BLOCKING.
+	// so the plasma fire sound plays on another FMOD_SOUND bank than the rest
+	FMOD_StartSoundPlasma(sfx_plasma);
 	P_SetPsprite(player, ps_flash, S_NULL);
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_PLASMA);
 }

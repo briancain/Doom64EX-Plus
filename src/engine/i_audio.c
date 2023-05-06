@@ -108,7 +108,7 @@ CVAR_CMD(s_driver, sndio)
 // FMOD Studio
 static float INCHES_PER_METER = 39.3701f;
 int num_sfx;
-FMOD_SOUND* fmod_studio_sound[93], * fmod_studio_sound_loop[93], * fmod_studio_music[1];
+FMOD_SOUND* fmod_studio_sound[93], * fmod_studio_sound_plasma[93], * fmod_studio_music[1];
 FMOD_CHANNEL* fmod_studio_channel = NULL, * fmod_studio_channel_loop = NULL;
 FMOD_RESULT   fmod_studio_result;
 FMOD_CHANNELGROUP *master;
@@ -1212,7 +1212,7 @@ void I_InitSequencer(void) {
     // Setup external tracks
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_033.wav", FMOD_3D, 0, &fmod_studio_sound[1]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_034.wav", FMOD_3D, 0, &fmod_studio_sound[2]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_035.wav", FMOD_3D, 0, &fmod_studio_sound[3]);
+    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_035.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound_plasma[3]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_036.wav", FMOD_3D, 0, &fmod_studio_sound[4]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_037.wav", FMOD_3D, 0, &fmod_studio_sound[5]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_038.wav", FMOD_3D, 0, &fmod_studio_sound[6]);
@@ -1221,7 +1221,7 @@ void I_InitSequencer(void) {
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_041.wav", FMOD_3D, 0, &fmod_studio_sound[9]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_042.wav", FMOD_3D, 0, &fmod_studio_sound[10]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_043.wav", FMOD_3D, 0, &fmod_studio_sound[11]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_044.wav", FMOD_3D, 0, &fmod_studio_sound[12]);
+    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_044.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[12]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_045.wav", FMOD_3D, 0, &fmod_studio_sound[13]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_046.wav", FMOD_3D, 0, &fmod_studio_sound[14]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_047.wav", FMOD_3D, 0, &fmod_studio_sound[15]);
@@ -1289,7 +1289,7 @@ void I_InitSequencer(void) {
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_109.wav", FMOD_3D, 0, &fmod_studio_sound[77]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_110.wav", FMOD_3D, 0, &fmod_studio_sound[78]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_111.wav", FMOD_3D, 0, &fmod_studio_sound[79]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_112.wav", FMOD_LOOP_NORMAL | FMOD_NONBLOCKING, 0, &fmod_studio_sound_loop[80]);
+    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_112.wav", FMOD_LOOP_NORMAL | FMOD_NONBLOCKING, 0, &fmod_studio_sound[80]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_113.wav", FMOD_3D, 0, &fmod_studio_sound[81]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_114.wav", FMOD_3D, 0, &fmod_studio_sound[82]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_115.wav", FMOD_3D, 0, &fmod_studio_sound[83]);
@@ -1653,9 +1653,23 @@ int FMOD_StartSound(int sfx_id) {
     return sfx_id;
 }
 
+// Not proud of it here but it is a necessary evil for now, to prevent cut-off between plasma fire and plasma ball boom
+int FMOD_StartSoundPlasma(int sfx_id) {
+    FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound_plasma[sfx_id], master, 0, &fmod_studio_channel));
+
+    Chan_SetSoundVolume(s_sfxvol.value);
+
+    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(fmod_studio_channel, &fmod_vec_position, NULL));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(fmod_studio_channel, false));
+
+    return sfx_id;
+}
+
 int FMOD_StartSFXLoop(int sfx_id) {
     FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound_loop[sfx_id], master, 0, &fmod_studio_channel_loop));
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel_loop));
 
     Chan_SetSoundVolume(s_sfxvol.value);
 

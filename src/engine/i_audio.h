@@ -63,6 +63,7 @@ int I_GetVoiceCount(void);
 sndsrc_t* I_GetSoundSource(int c);
 
 int FMOD_StartSound(int sfx_id);
+int FMOD_StartSoundPlasma(int sfx_id);
 int FMOD_StopSound(void);
 int FMOD_StartMusic(int mus_id);
 int FMOD_StartSFXLoop(int sfx_id);
