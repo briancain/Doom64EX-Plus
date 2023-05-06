@@ -565,7 +565,6 @@ void A_PlasmaAnimate(player_t* player, pspdef_t* psp) {
 void A_FirePlasma(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
-	FMOD_StartSound(sfx_plasma);
 	P_SetPsprite(player, ps_flash, S_NULL);
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_PLASMA);
 }
@@ -729,7 +728,6 @@ void A_BFGFlash(mobj_t* actor) {
 			actor->target->player->bfgcount = 100;
 		}
 	}
-	FMOD_StartSound(sfx_bfgexp);
 	actor->alpha = 170;
 }
 

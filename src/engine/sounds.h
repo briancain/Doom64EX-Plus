@@ -41,7 +41,7 @@ typedef enum {
 	sfx_missile,    //missile
 	sfx_spawn,      //spawn
 	sfx_bfgexp,     //bfgexplode
-	sfx_explode,    //explode
+	sfx_implod,     //impact
 	sfx_pstart,     //platup
 	sfx_pstop,      //platdown
 	sfx_doorup,     //doorup
@@ -81,7 +81,7 @@ typedef enum {
 	sfx_posact,     //possact
 	sfx_impact,     //impact
 	sfx_dbact,      //monsteract
-	sfx_implod,     //impact
+	sfx_explode,    //explode
 	sfx_punch,      //punch
 	sfx_cybhoof,    //hoof
 	sfx_metal,      //metal
@@ -120,8 +120,8 @@ typedef enum {
 	sfx_rectpain,   //rectpain
 	sfx_rectsit,    //rectsit
 	sfx_sgcock,     //sgcock
-	sfx_noway,      //oof2??
 	sfx_bdmissile,  //projectile
+	sfx_noway,      //oof2??
 	sfx_skelsit,
 	sfx_skeldth,
 	sfx_spisit,

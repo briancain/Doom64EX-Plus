@@ -141,8 +141,8 @@ void P_ExplodeMissile(mobj_t* mo) {
 	mo->flags &= ~MF_MISSILE;
 
 	if (mo->info->deathsound) {
-		FMOD_StopSFXLoop();
-		FMOD_StartSFXLoop(mo->info->deathsound);
+		FMOD_StopSound();
+		FMOD_StartSound(mo->info->deathsound);
 	}
 }
 

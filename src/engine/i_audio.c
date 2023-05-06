@@ -108,7 +108,7 @@ CVAR_CMD(s_driver, sndio)
 // FMOD Studio
 static float INCHES_PER_METER = 39.3701f;
 int num_sfx;
-FMOD_SOUND* fmod_studio_sound[93], * fmod_studio_music[1];
+FMOD_SOUND* fmod_studio_sound[93], * fmod_studio_sound_loop[93], * fmod_studio_music[1];
 FMOD_CHANNEL* fmod_studio_channel = NULL, * fmod_studio_channel_loop = NULL;
 FMOD_RESULT   fmod_studio_result;
 FMOD_CHANNELGROUP *master;
@@ -1289,7 +1289,7 @@ void I_InitSequencer(void) {
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_109.wav", FMOD_3D, 0, &fmod_studio_sound[77]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_110.wav", FMOD_3D, 0, &fmod_studio_sound[78]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_111.wav", FMOD_3D, 0, &fmod_studio_sound[79]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_112.wav", FMOD_LOOP_NORMAL, 0, &fmod_studio_sound[80]);
+    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_112.wav", FMOD_LOOP_NORMAL | FMOD_NONBLOCKING, 0, &fmod_studio_sound_loop[80]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_113.wav", FMOD_3D, 0, &fmod_studio_sound[81]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_114.wav", FMOD_3D, 0, &fmod_studio_sound[82]);
     FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_115.wav", FMOD_3D, 0, &fmod_studio_sound[83]);
@@ -1500,7 +1500,7 @@ void I_ShutdownSound(void)
 //
 
 void I_SetMusicVolume(float volume) {
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(fmod_studio_channel, volume / 255.0f));
+    //FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(fmod_studio_channel, volume / 255.0f));
     doomseq.musicvolume = (volume * 1.125f);
 }
 
@@ -1509,8 +1509,8 @@ void I_SetMusicVolume(float volume) {
 //
 
 void I_SetSoundVolume(float volume) {
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(fmod_studio_channel, volume / 255.0f));
-    doomseq.soundvolume = (volume * 0.925f);
+    //FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(fmod_studio_channel, volume / 255.0f));
+    //doomseq.soundvolume = (volume * 0.925f);
 }
 
 //
@@ -1641,6 +1641,7 @@ void I_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, int reverb)
 // FMOD Studio SFX API
 
 int FMOD_StartSound(int sfx_id) {
+    FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel));
     
     Chan_SetSoundVolume(s_sfxvol.value);
@@ -1654,11 +1655,12 @@ int FMOD_StartSound(int sfx_id) {
 
 int FMOD_StartSFXLoop(int sfx_id) {
     FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound_loop[sfx_id], master, 0, &fmod_studio_channel_loop));
 
-    Chan_SetSoundVolume(20.0f); //because electric buzz is annoying
+    Chan_SetSoundVolume(s_sfxvol.value);
 
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(fmod_studio_channel_loop, 20.0));
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel_loop));
+    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(fmod_studio_channel, &fmod_vec_position, NULL));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(fmod_studio_channel, false));
 
     return sfx_id;
 }
@@ -1666,6 +1668,13 @@ int FMOD_StartSFXLoop(int sfx_id) {
 int FMOD_StopSFXLoop(void) {
     FMOD_Channel_SetPaused(fmod_studio_channel_loop, true);
     FMOD_ERROR_CHECK(FMOD_Channel_Stop(fmod_studio_channel_loop));
+
+    return 0;
+}
+
+int FMOD_StopSound(void) {
+    FMOD_Channel_SetPaused(fmod_studio_channel, true);
+    FMOD_ERROR_CHECK(FMOD_Channel_Stop(fmod_studio_channel));
 
     return 0;
 }
