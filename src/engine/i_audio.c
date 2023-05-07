@@ -45,7 +45,6 @@
 
 #include <fmod.h>
 #include <fmod_errors.h>
-#include <fluidsynth.h>
 
 #include "doomtype.h"
 #include "doomdef.h"
@@ -262,11 +261,6 @@ typedef union {
 } seqmessage_t;
 
 typedef struct {
-    // library specific stuff. should never
-    // be modified after initialization
-    fluid_settings_t* settings;
-    fluid_synth_t* synth;
-    fluid_audio_driver_t* driver;
     int                     sfont_id; // 20120112 bkw: needs to be signed
     SDL_Thread* thread;
     int                   playtime;
@@ -321,7 +315,7 @@ void Seq_SetGain(float db) {
 //
 
 static void Seq_SetConfig(doomseq_t* seq, char* setting, int value) {
-    fluid_settings_setint(seq->settings, setting, value);
+
 }
 
 //
@@ -450,8 +444,6 @@ static void Chan_StopTrack(doomseq_t* seq, channel_t* chan) {
     else {
         c = chan->id;
     }
-
-    fluid_synth_cc(seq->synth, c, 0x78, 0);
 }
 
 //
@@ -563,8 +555,6 @@ static channel_t* Song_AddTrackToPlaylist(doomseq_t* seq, song_t* song, track_t*
 static void Event_NoteOff(doomseq_t* seq, channel_t* chan) {
     chan->key = Chan_GetNextMidiByte(chan);
     chan->velocity = 0;
-
-    fluid_synth_noteoff(seq->synth, chan->track->channel, chan->key);
 }
 
 //
@@ -574,9 +564,6 @@ static void Event_NoteOff(doomseq_t* seq, channel_t* chan) {
 static void Event_NoteOn(doomseq_t* seq, channel_t* chan) {
     chan->key = Chan_GetNextMidiByte(chan);
     chan->velocity = Chan_GetNextMidiByte(chan);
-
-    fluid_synth_cc(seq->synth, chan->id, 0x5B, chan->depth);
-    fluid_synth_noteon(seq->synth, chan->track->channel, chan->key, chan->velocity);
 }
 
 //
@@ -600,9 +587,6 @@ static void Event_ControlChange(doomseq_t* seq, channel_t* chan) {
             //Chan_SetSoundVolume(seq, chan);
         }
     }
-    else {
-        fluid_synth_cc(seq->synth, chan->track->channel, ctrl, val);
-    }
 }
 
 //
@@ -613,8 +597,6 @@ static void Event_ProgramChange(doomseq_t* seq, channel_t* chan) {
     int program;
 
     program = Chan_GetNextMidiByte(chan);
-
-    fluid_synth_program_change(seq->synth, chan->track->channel, program);
 }
 
 //
@@ -625,8 +607,6 @@ static void Event_ChannelPressure(doomseq_t* seq, channel_t* chan) {
     int val;
 
     val = Chan_GetNextMidiByte(chan);
-
-    fluid_synth_channel_pressure(seq->synth, chan->track->channel, val);
 }
 
 //
@@ -639,8 +619,6 @@ static void Event_PitchBend(doomseq_t* seq, channel_t* chan) {
 
     b1 = Chan_GetNextMidiByte(chan);
     b2 = Chan_GetNextMidiByte(chan);
-
-    fluid_synth_pitch_bend(seq->synth, chan->track->channel, ((b2 << 8) | b1) >> 1);
 }
 
 //
@@ -773,7 +751,6 @@ static int Signal_StopAll(doomseq_t* seq) {
 //
 
 static int Signal_Reset(doomseq_t* seq) {
-    fluid_synth_system_reset(seq->synth);
 
     Seq_SetStatus(seq, SEQ_SIGNAL_READY);
     return 1;
@@ -1251,63 +1228,8 @@ void I_InitSequencer(void) {
     //
     // init settings
     //
-    doomseq.settings = new_fluid_settings();
     Seq_SetConfig(&doomseq, "synth.midi-channels", 0x10 + MIDI_CHANNELS);
     Seq_SetConfig(&doomseq, "synth.polyphony", 128); // [Immorpher] high polyphony slows down the game
-
-
-    // 20120105 bkw: On Linux, always use alsa (fluidsynth default is to use
-    // JACK, if it's compiled in. We don't want to start jackd for a game).
-    fluid_settings_setstr(doomseq.settings, "audio.driver", s_driver.string);
-
-    CON_DPrintf("Audio driver: %s\n", s_driver.string);
-
-    //
-    // init synth
-    //
-    doomseq.synth = new_fluid_synth(doomseq.settings);
-    if (doomseq.synth == NULL) {
-        CON_Warnf("I_InitSequencer: failed to create synthesizer");
-        return;
-    }
-
-    //
-    // init audio driver
-    //
-    doomseq.driver = new_fluid_audio_driver(doomseq.settings, doomseq.synth);
-    if (doomseq.driver == NULL) {
-        CON_Warnf("I_InitSequencer: failed to create audio driver");
-        return;
-    }
-
-    //
-    // load soundfont
-    //
-
-    sffound = false;
-    if (s_soundfont.string[0]) {
-        if (I_FileExists(s_soundfont.string)) {
-            I_Printf("Found SoundFont %s\n", s_soundfont.string);
-            doomseq.sfont_id = fluid_synth_sfload(doomseq.synth, s_soundfont.string, 1);
-
-            CON_DPrintf("Loading %s\n", s_soundfont.string);
-
-            sffound = true;
-        }
-        else {
-            CON_Warnf("CVar s_soundfont doesn't point to a file.", s_soundfont.string);
-        }
-    }
-
-    if (!sffound && (sfpath = I_FindDataFile("doomsnd.sf2"))) {
-        I_Printf("Found SoundFont %s\n", sfpath);
-        doomseq.sfont_id = fluid_synth_sfload(doomseq.synth, sfpath, 1);
-
-        CON_DPrintf("Loading %s\n", sfpath);
-
-        free(sfpath);
-        sffound = true;
-    }
 
     //
     // set state
@@ -1397,10 +1319,6 @@ void I_ShutdownSound(void)
 {
     FMOD_ERROR_CHECK(FMOD_System_Close(sound.fmod_studio_system));
     FMOD_ERROR_CHECK(FMOD_System_Release(sound.fmod_studio_system));
-
-    if (doomseq.synth) {
-        Seq_Shutdown(&doomseq);
-    }
 }
 
 //

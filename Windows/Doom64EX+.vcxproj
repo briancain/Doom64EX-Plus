@@ -143,7 +143,7 @@
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64;$(ProjectDir)..\src\engine\3rdparty\Libs\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>fmod_vc.lib;opengl32.lib;glew32.lib;bz2.lib;gio-2.0.lib;gmodule-2.0.lib;gobject-2.0.lib;gthread-2.0.lib;charset.lib;iconv.lib;libffi.lib;fluidsynth.lib;glib-2.0.lib;intl.lib;pcre2-8.lib;pcre2-16.lib;pcre2-32.lib;pcre2-posix.lib;zlib.lib;libpng16.lib;SDL2main.lib;SDL2.lib;wsock32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;opengl32.lib;zlib.lib;libpng16.lib;SDL2main.lib;SDL2.lib;wsock32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -171,7 +171,6 @@
     <ClCompile Include="..\src\engine\f_finale.c" />
     <ClCompile Include="..\src\engine\gl_draw.c" />
     <ClCompile Include="..\src\engine\gl_main.c" />
-    <ClCompile Include="..\src\engine\gl_shader.c" />
     <ClCompile Include="..\src\engine\gl_texture.c" />
     <ClCompile Include="..\src\engine\g_actions.c" />
     <ClCompile Include="..\src\engine\g_demo.c" />
@@ -260,7 +259,6 @@
     <ClInclude Include="..\src\engine\f_finale.h" />
     <ClInclude Include="..\src\engine\gl_draw.h" />
     <ClInclude Include="..\src\engine\gl_main.h" />
-    <ClInclude Include="..\src\engine\gl_shader.h" />
     <ClInclude Include="..\src\engine\gl_texture.h" />
     <ClInclude Include="..\src\engine\g_actions.h" />
     <ClInclude Include="..\src\engine\g_controls.h" />
