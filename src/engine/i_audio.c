@@ -356,7 +356,7 @@ static void Seq_SetStatus(doomseq_t* seq, int status) {
 //
 
 void Chan_SetMusicVolume(float volume) {
-    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master_music));
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system_music, &sound.master_music));
     FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(sound.master_music, volume / 255.0f));
 }
 
@@ -1172,15 +1172,19 @@ void I_InitSequencer(void) {
     I_Printf("Made with FMOD Studio by Firelight Technologies Pty Ltd.\n\n");
 
     FMOD_ERROR_CHECK(FMOD_System_SetDSPBufferSize(sound.fmod_studio_system, 1024, 128));
+    FMOD_ERROR_CHECK(FMOD_System_SetDSPBufferSize(sound.fmod_studio_system_music, 1024, 128));
     
     FMOD_ERROR_CHECK(FMOD_System_Create(&sound.fmod_studio_system, FMOD_VERSION));
+    FMOD_ERROR_CHECK(FMOD_System_Create(&sound.fmod_studio_system_music, FMOD_VERSION));
+
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system, 92, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
+    FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system_music,128, FMOD_INIT_NORMAL, NULL));
     
     FMOD_ERROR_CHECK(FMOD_Sound_Set3DMinMaxDistance(sound.fmod_studio_sound[num_sfx], 0.5f * INCHES_PER_METER, 5000.0f * INCHES_PER_METER));
     FMOD_ERROR_CHECK(FMOD_System_Set3DSettings(sound.fmod_studio_system, 1.0, INCHES_PER_METER, 1.0f));
     
     FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master));
-    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master_music));
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system_music, &sound.master_music));
 
     // Setup external tracks
 
@@ -1319,6 +1323,9 @@ void I_ShutdownSound(void)
 {
     FMOD_ERROR_CHECK(FMOD_System_Close(sound.fmod_studio_system));
     FMOD_ERROR_CHECK(FMOD_System_Release(sound.fmod_studio_system));
+
+    FMOD_ERROR_CHECK(FMOD_System_Close(sound.fmod_studio_system_music));
+    FMOD_ERROR_CHECK(FMOD_System_Release(sound.fmod_studio_system_music));
 }
 
 //
@@ -1326,7 +1333,7 @@ void I_ShutdownSound(void)
 //
 
 void I_SetMusicVolume(float volume) {
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(sound.fmod_studio_channel_music, volume * 100.0f / 255.0f));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(sound.fmod_studio_channel_music, volume / 255.0f));
 }
 
 //
@@ -1467,6 +1474,7 @@ int FMOD_StartSoundPlasma(int sfx_id) {
 
 int FMOD_StartSFXLoop(int sfx_id) {
     FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
+    FMOD_Channel_SetVolume(sound.fmod_studio_channel_loop, 20.0f);
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound[sfx_id], sound.master, 0, &sound.fmod_studio_channel_loop));
 
     FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, &fmod_vec_position, NULL));
@@ -1491,7 +1499,7 @@ int FMOD_StopSound(void) {
 
 int FMOD_StartMusic(int mus_id) {
     FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, false);
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_music[mus_id], sound.master_music, 0, &sound.fmod_studio_channel_music));
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system_music, sound.fmod_studio_music[mus_id], sound.master_music, 0, &sound.fmod_studio_channel_music));
 
     FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel_music, false));
 

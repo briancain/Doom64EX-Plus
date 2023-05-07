@@ -46,6 +46,7 @@ typedef struct {
 // FMOD Studio
 struct Sound {
     FMOD_SYSTEM*    fmod_studio_system;
+    FMOD_SYSTEM*    fmod_studio_system_music;
 
     FMOD_SOUND*     fmod_studio_sound[93];
     FMOD_SOUND*     fmod_studio_sound_plasma[93];
