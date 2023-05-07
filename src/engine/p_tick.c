@@ -341,7 +341,7 @@ void P_Stop(void) {
 
 	// music continues on exit if defined
 	if (!P_GetMapInfo(gamemap)->contmusexit) {
-		S_StopMusic();
+		FMOD_StopMusic();
 	}
 
 	// end iwad demo playback here
@@ -357,13 +357,13 @@ void P_Stop(void) {
 				WIPE_MeltScreen();
 			}
 			else {
-				S_StopMusic();
+				FMOD_StopMusic();
 				WIPE_FadeScreen(8);
 			}
 		}
 		else {
 			if (gameaction == ga_warpquick) {
-				S_StopMusic();
+				FMOD_StopMusic();
 			}
 		}
 	}

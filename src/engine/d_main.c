@@ -36,7 +36,7 @@
 #endif
 
 #include <stdlib.h>
-
+#include "i_audio.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "i_video.h"
@@ -501,7 +501,7 @@ static void Title_Stop(void) {
 	allowclearmenu = true;
 
 	WIPE_FadeScreen(8);
-	S_StopMusic();
+	FMOD_StopMusic();
 }
 
 //

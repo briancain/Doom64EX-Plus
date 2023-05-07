@@ -140,7 +140,7 @@ void F_Start(void) {
 //
 
 void F_Stop(void) {
-	S_StopMusic();
+	FMOD_StopMusic();
 	//gameaction = ga_nothing;
 	WIPE_FadeScreen(6);
 }

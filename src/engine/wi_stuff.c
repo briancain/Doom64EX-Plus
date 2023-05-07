@@ -28,7 +28,7 @@
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>
-
+#include "i_audio.h"
 #include "z_zone.h"
 #include "g_game.h"
 #include "s_sound.h"
@@ -129,7 +129,7 @@ void WI_Stop(void) {
 
 	allowmenu = false;
 
-	S_StopMusic();
+	FMOD_StopMusic();
 	WIPE_FadeScreen(6);
 }
 

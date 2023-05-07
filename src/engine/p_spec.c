@@ -1605,7 +1605,7 @@ int P_DoSpecialLine(mobj_t* thing, line_t* line, int side) {
 
 	case 215:
 		//Stop music
-		S_StopMusic();
+		FMOD_StopMusic();
 		ok = 1;
 		break;
 
@@ -2199,7 +2199,7 @@ boolean P_ChangeMusic(int index)
 		int dm_end = W_GetNumForName("DM_END");
 		if (index + dm_start >= dm_end - 1) return false;
 	}
-	S_StopMusic();
+	FMOD_StopMusic();
 	FMOD_StartMusic(index);
 	return true;
 }

@@ -182,6 +182,8 @@
     <ClCompile Include="..\src\engine\i_audio.c">
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
     </ClCompile>
+    <ClCompile Include="..\src\engine\i_fmod_music.c" />
+    <ClCompile Include="..\src\engine\i_fmod_sfx.c" />
     <ClCompile Include="..\src\engine\i_main.c" />
     <ClCompile Include="..\src\engine\i_png.c" />
     <ClCompile Include="..\src\engine\i_sdlinput.c" />

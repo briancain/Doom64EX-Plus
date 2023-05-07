@@ -108,11 +108,7 @@ CVAR_CMD(s_driver, sndio)
 // FMOD Studio
 static float INCHES_PER_METER = 39.3701f;
 int num_sfx;
-FMOD_SOUND* fmod_studio_sound[93], * fmod_studio_sound_plasma[93], * fmod_studio_music[1];
-FMOD_CHANNEL* fmod_studio_channel = NULL, * fmod_studio_channel_loop = NULL;
-FMOD_RESULT   fmod_studio_result;
-FMOD_CHANNELGROUP *master;
-FMOD_CREATESOUNDEXINFO extinfo;
+
 FMOD_BOOL IsPlaying;
 FMOD_BOOL Paused = FALSE;
 FMOD_VECTOR fmod_vec_position = { 0, 0, 0 };
@@ -315,9 +311,9 @@ static void FMOD_ERROR_CHECK(FMOD_RESULT result) {
 // all sounds that are played
 //
 
-static void Seq_SetGain(doomseq_t* seq) {
-    FMOD_Channel_SetLowPassGain(fmod_studio_channel, seq->gain);
-    FMOD_Channel_SetLowPassGain(fmod_studio_channel_loop, seq->gain);
+void Seq_SetGain(float db) {
+    FMOD_Channel_SetLowPassGain(sound.fmod_studio_channel, db);
+    FMOD_Channel_SetLowPassGain(sound.fmod_studio_channel_loop, db);
 }
 
 //
@@ -365,9 +361,9 @@ static void Seq_SetStatus(doomseq_t* seq, int status) {
 // Should be set by the audio thread
 //
 
-static void Chan_SetMusicVolume(float volume) {
-    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &master));
-    FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(master, volume / 255.0f));
+void Chan_SetMusicVolume(float volume) {
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master_music));
+    FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(sound.master_music, volume / 255.0f));
 }
 
 //
@@ -376,9 +372,9 @@ static void Chan_SetMusicVolume(float volume) {
 // Should be set by the audio thread
 //
 
-static void Chan_SetSoundVolume(float volume) {
-    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &master));
-    FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(master, volume / 255.0f));
+void Chan_SetSoundVolume(float volume) {
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master));
+    FMOD_ERROR_CHECK(FMOD_ChannelGroup_SetVolume(sound.master, volume / 255.0f));
 }
 
 //
@@ -827,14 +823,14 @@ static int Signal_Resume(doomseq_t* seq) {
 // Signal_UpdateGain
 //
 
-static int Signal_UpdateGain(doomseq_t* seq) {
+static int Signal_UpdateGain(float db) {
     SEMAPHORE_LOCK()
 
-        Seq_SetGain(seq);
+        Seq_SetGain(db);
 
     SEMAPHORE_UNLOCK()
 
-        Seq_SetStatus(seq, SEQ_SIGNAL_READY);
+        //Seq_SetStatus(seq, SEQ_SIGNAL_READY);
     return 1;
 }
 
@@ -1203,105 +1199,17 @@ void I_InitSequencer(void) {
     FMOD_ERROR_CHECK(FMOD_System_Create(&sound.fmod_studio_system, FMOD_VERSION));
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system, 92, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
     
-    FMOD_ERROR_CHECK(FMOD_Sound_Set3DMinMaxDistance(fmod_studio_sound[num_sfx], 0.5f * INCHES_PER_METER, 5000.0f * INCHES_PER_METER));
+    FMOD_ERROR_CHECK(FMOD_Sound_Set3DMinMaxDistance(sound.fmod_studio_sound[num_sfx], 0.5f * INCHES_PER_METER, 5000.0f * INCHES_PER_METER));
     FMOD_ERROR_CHECK(FMOD_System_Set3DSettings(sound.fmod_studio_system, 1.0, INCHES_PER_METER, 1.0f));
     
-    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &master));
-    FMOD_ERROR_CHECK(FMOD_System_CreateSound(sound.fmod_studio_system, "./music/MUS_MAP01.wav", FMOD_LOOP_NORMAL, 0, &fmod_studio_music[1]));
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master));
+    FMOD_ERROR_CHECK(FMOD_System_GetMasterChannelGroup(sound.fmod_studio_system, &sound.master_music));
 
     // Setup external tracks
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_033.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[1]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_034.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[2]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_035.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound_plasma[3]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_036.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[4]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_037.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[5]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_038.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[6]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_039.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[7]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_040.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[8]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_041.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[9]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_042.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[10]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_043.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[11]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_044.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[12]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_045.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[13]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_046.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[14]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_047.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[15]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_048.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[16]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_049.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[17]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_050.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[18]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_051.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[19]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_052.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[20]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_053.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[21]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_054.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[22]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_055.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[23]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_056.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[24]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_057.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[25]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_058.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[26]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_059.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[27]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_060.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[28]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_061.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[29]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_062.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[30]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_063.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[31]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_064.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[32]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_065.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[33]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_066.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[34]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_067.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[35]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_068.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[36]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_069.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[37]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_070.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[38]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_071.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[39]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_072.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[40]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_073.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[41]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_074.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[42]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_075.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[43]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_076.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[44]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_077.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[45]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_078.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[46]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_079.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[47]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_080.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[48]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_081.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[49]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_082.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[50]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_083.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[51]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_084.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[52]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_085.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[53]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_086.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[54]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_087.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[55]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_088.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[56]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_089.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[57]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_090.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[58]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_091.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[59]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_092.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[60]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_093.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[61]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_094.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[62]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_095.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[63]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_096.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[64]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_097.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[65]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_098.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[66]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_099.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[67]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_100.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[68]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_101.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[69]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_102.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[70]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_103.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[71]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_104.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[72]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_105.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[73]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_106.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[74]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_107.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[75]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_108.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[76]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_109.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[77]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_110.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[78]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_111.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[79]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_112.wav", FMOD_LOOP_NORMAL | FMOD_NONBLOCKING, 0, &fmod_studio_sound[80]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_113.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[81]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_114.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[82]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_115.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[83]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_116.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[84]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_117.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[85]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_118.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[86]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_119.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[87]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_120.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[88]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_121.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[89]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_122.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[90]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_123.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[91]);
-    FMOD_System_CreateSound(sound.fmod_studio_system, "./sfx/SFX_0124.wav", FMOD_3D | FMOD_NONBLOCKING, 0, &fmod_studio_sound[92]);
+
+    FMOD_CreateMusicTracksInit();
+
+    FMOD_CreateSfxTracksInit();
 
     //
     // init mutex
@@ -1404,10 +1312,10 @@ void I_InitSequencer(void) {
     //
     // set state
     //
-    doomseq.gain = 1.0f;
+    float gain = 1.0f;
 
     Seq_SetStatus(&doomseq, SEQ_SIGNAL_READY);
-    Seq_SetGain(&doomseq);
+    Seq_SetGain(gain);
 
     //
     // if something went terribly wrong, then shutdown everything
@@ -1500,8 +1408,7 @@ void I_ShutdownSound(void)
 //
 
 void I_SetMusicVolume(float volume) {
-    //FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(fmod_studio_channel, volume / 255.0f));
-    doomseq.musicvolume = (volume * 1.125f);
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolume(sound.fmod_studio_channel_music, volume * 100.0f / 255.0f));
 }
 
 //
@@ -1537,7 +1444,7 @@ void I_PauseSound(void) {
         return;
     }
 
-    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(fmod_studio_channel, true));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, true));
     Seq_SetStatus(&doomseq, SEQ_SIGNAL_PAUSE);
     //Seq_WaitOnSignal(&doomseq);
 }
@@ -1551,7 +1458,7 @@ void I_ResumeSound(void) {
         return;
     }
 
-    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
     Seq_SetStatus(&doomseq, SEQ_SIGNAL_RESUME);
     //Seq_WaitOnSignal(&doomseq);
 }
@@ -1567,8 +1474,8 @@ void I_SetGain(float db) {
 
     doomseq.gain = db;
 
-    FMOD_Channel_SetLowPassGain(fmod_studio_channel, db);
-    FMOD_Channel_SetLowPassGain(fmod_studio_channel_loop, db);
+    FMOD_Channel_SetLowPassGain(sound.fmod_studio_channel, db);
+    FMOD_Channel_SetLowPassGain(sound.fmod_studio_channel_loop, db);
     Seq_SetStatus(&doomseq, SEQ_SIGNAL_SETGAIN);
     //Seq_WaitOnSignal(&doomseq);
 }
@@ -1578,31 +1485,8 @@ void I_SetGain(float db) {
 //
 
 void I_StartMusic(int mus_id) {
-    song_t* song;
-    channel_t* chan;
-    int i;
 
-    if (!seqready) {
-        return;
-    }
-
-    SEMAPHORE_LOCK()
-        song = &doomseq.songs[mus_id];
-    for (i = 0; i < song->ntracks; i++) {
-        chan = Song_AddTrackToPlaylist(&doomseq, song, &song->tracks[i]);
-
-        if (chan == NULL) {
-            break;
-        }
-
-        chan->volume = doomseq.musicvolume;
-    }
-    SEMAPHORE_UNLOCK()
-
-        // [Immorpher] Re-establish linear sound interpolation
-        for (i = 0; i < 15; i++) {
-            fluid_synth_set_interp_method(doomseq.synth, i, FLUID_INTERP_LINEAR);
-        }
+    FMOD_StartMusic(mus_id);
 }
 
 //
@@ -1641,62 +1525,78 @@ void I_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, int reverb)
 // FMOD Studio SFX API
 
 int FMOD_StartSound(int sfx_id) {
-    FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel));
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound[sfx_id], sound.master, 0, &sound.fmod_studio_channel));
     
-    Chan_SetSoundVolume(s_sfxvol.value);
-    
-    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(fmod_studio_channel, &fmod_vec_position, NULL));
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(fmod_studio_channel, false));
-    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, &fmod_vec_position, NULL));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
 
     return sfx_id;
 }
 
 // Not proud of it here but it is a necessary evil for now, to prevent cut-off between plasma fire and plasma ball boom
 int FMOD_StartSoundPlasma(int sfx_id) {
-    FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound_plasma[sfx_id], master, 0, &fmod_studio_channel));
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound_plasma[sfx_id], sound.master, 0, &sound.fmod_studio_channel));
 
-    Chan_SetSoundVolume(s_sfxvol.value);
-
-    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(fmod_studio_channel, &fmod_vec_position, NULL));
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(fmod_studio_channel, false));
-    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, &fmod_vec_position, NULL));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
 
     return sfx_id;
 }
 
 int FMOD_StartSFXLoop(int sfx_id) {
-    FMOD_Channel_SetPaused(fmod_studio_channel_loop, false);
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_sound[sfx_id], master, 0, &fmod_studio_channel_loop));
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound[sfx_id], sound.master, 0, &sound.fmod_studio_channel_loop));
 
-    Chan_SetSoundVolume(s_sfxvol.value);
-
-    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(fmod_studio_channel, &fmod_vec_position, NULL));
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(fmod_studio_channel, false));
+    FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, &fmod_vec_position, NULL));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
 
     return sfx_id;
 }
 
 int FMOD_StopSFXLoop(void) {
-    FMOD_Channel_SetPaused(fmod_studio_channel_loop, true);
-    FMOD_ERROR_CHECK(FMOD_Channel_Stop(fmod_studio_channel_loop));
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, true);
+    FMOD_ERROR_CHECK(FMOD_Channel_Stop(sound.fmod_studio_channel_loop));
 
     return 0;
 }
 
 int FMOD_StopSound(void) {
-    FMOD_Channel_SetPaused(fmod_studio_channel, true);
-    FMOD_ERROR_CHECK(FMOD_Channel_Stop(fmod_studio_channel));
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel, true);
+    FMOD_ERROR_CHECK(FMOD_Channel_Stop(sound.fmod_studio_channel));
 
     return 0;
 }
 
 int FMOD_StartMusic(int mus_id) {
-    Chan_SetMusicVolume(s_musvol.value);
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, false);
+    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_music[mus_id], sound.master_music, 0, &sound.fmod_studio_channel_music));
 
-    FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, fmod_studio_music[mus_id], master, 0, &fmod_studio_channel));
+    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel_music, false));
 
     return mus_id;
+}
+
+void FMOD_StopMusic(void) {
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, true);
+    FMOD_ERROR_CHECK(FMOD_Channel_Stop(sound.fmod_studio_channel_music));
+}
+
+void FMOD_PauseMusic(void) {
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, true);
+}
+
+void FMOD_ResumeMusic(void) {
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, false);
+}
+
+void FMOD_PauseSFXLoop(void) {
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, true);
+}
+
+void FMOD_ResumeSFXLoop(void) {
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
 }

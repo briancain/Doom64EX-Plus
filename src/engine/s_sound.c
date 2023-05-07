@@ -134,7 +134,7 @@ void S_Init(void) {
 //
 
 void S_SetSoundVolume(float volume) {
-    I_SetSoundVolume(volume);
+    Chan_SetSoundVolume(volume);
 }
 
 //
@@ -142,7 +142,7 @@ void S_SetSoundVolume(float volume) {
 //
 
 void S_SetMusicVolume(float volume) {
-    I_SetMusicVolume(volume);
+    Chan_SetMusicVolume(volume);
 }
 
 //
@@ -150,7 +150,7 @@ void S_SetMusicVolume(float volume) {
 //
 
 void S_SetGainOutput(float db) {
-    I_SetGain(db);
+    Seq_SetGain(db);
 }
 
 //

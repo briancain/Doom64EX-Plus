@@ -45,14 +45,25 @@ typedef struct {
 
 // FMOD Studio
 struct Sound {
-    FMOD_SYSTEM* fmod_studio_system;
+    FMOD_SYSTEM*    fmod_studio_system;
+
+    FMOD_SOUND*     fmod_studio_sound[93];
+    FMOD_SOUND*     fmod_studio_sound_plasma[93];
+    FMOD_SOUND*     fmod_studio_music[138];
+
+    FMOD_CHANNEL*   fmod_studio_channel;
+    FMOD_CHANNEL*   fmod_studio_channel_music;
+    FMOD_CHANNEL*   fmod_studio_channel_loop;
+
+    FMOD_RESULT     fmod_studio_result;
+
+    FMOD_CHANNELGROUP*  master;
+    FMOD_CHANNELGROUP*  master_music;
+
+    FMOD_CREATESOUNDEXINFO  extinfo;
 };
 
 struct Sound sound;
-extern FMOD_SOUND* fmod_studio_sound[93];
-extern FMOD_CHANNEL* fmod_studio_channel;
-extern FMOD_RESULT   fmod_studio_result;
-extern FMOD_CHANNELGROUP* master;
 extern FMOD_VECTOR fmod_vec_position;
 extern FMOD_VECTOR fmod_vec_velocity;
 extern FMOD_VECTOR fmod_vec_forward;
@@ -62,12 +73,23 @@ int I_GetMaxChannels(void);
 int I_GetVoiceCount(void);
 sndsrc_t* I_GetSoundSource(int c);
 
+void Chan_SetMusicVolume(float volume);
+void Chan_SetSoundVolume(float volume);
+void Seq_SetGain(float db);
+
+void FMOD_CreateMusicTracksInit(void);
+void FMOD_CreateSfxTracksInit(void);
 int FMOD_StartSound(int sfx_id);
 int FMOD_StartSoundPlasma(int sfx_id);
 int FMOD_StopSound(void);
 int FMOD_StartMusic(int mus_id);
+void FMOD_StopMusic(void);
 int FMOD_StartSFXLoop(int sfx_id);
 int FMOD_StopSFXLoop(void);
+void FMOD_PauseMusic(void);
+void FMOD_ResumeMusic(void);
+void FMOD_PauseSFXLoop(void);
+void FMOD_ResumeSFXLoop(void);
 
 void I_InitSequencer(void);
 void I_ShutdownSound(void);

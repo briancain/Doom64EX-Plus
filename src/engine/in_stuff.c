@@ -26,6 +26,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "i_audio.h"
 #include "i_system.h"
 #include "d_englsh.h"
 #include "doomstat.h"
@@ -112,7 +113,7 @@ void IN_Start(void) {
 
 void IN_Stop(void) {
 	if (fstopmusic) {
-		S_StopMusic();
+		FMOD_StopMusic();
 	}
 
 	WIPE_FadeScreen(6);
