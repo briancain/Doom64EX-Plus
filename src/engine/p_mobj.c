@@ -142,7 +142,7 @@ void P_ExplodeMissile(mobj_t* mo) {
 
 	if (mo->info->deathsound) {
 		FMOD_StopSound();
-		FMOD_StartSound(mo->info->deathsound);
+		S_StartSound(mo, mo->info->deathsound);
 	}
 }
 
@@ -173,7 +173,7 @@ void P_MissileHit(mobj_t* mo) {
 			P_SpawnBlood(mo->x, mo->y, mo->z, damage);
 		}
 		else {
-			FMOD_StartSound(sfx_darthit);
+			S_StartSound(mo, sfx_darthit);
 			P_SpawnPuff(mo->x, mo->y, mo->z);
 		}
 	}
@@ -443,7 +443,7 @@ void P_NightmareRespawn(mobj_t* mobj) {
 	// initiate spawn sound
 	if (m_nospawnsound.value != 1)
 	{
-		FMOD_StartSound(sfx_spawn);
+		S_StartSound(mo, sfx_spawn);
 	}
 
 	if (mthing->options & MTF_AMBUSH) {
@@ -477,7 +477,7 @@ void P_RespawnSpecials(mobj_t* special) {
 
 	if (m_nospawnsound.value != 1)
 	{
-		FMOD_StartSound(sfx_spawn);
+		S_StartSound(special, sfx_spawn);
 	}
 }
 
@@ -905,7 +905,7 @@ int EV_SpawnMobjTemplate(line_t* line, boolean silent) {
 
 		if (!silent && m_nospawnsound.value != 1)
 		{
-			FMOD_StartSound(sfx_spawn);
+			S_StartSound(mobj, sfx_spawn);
 		}
 
 		if (mobj->type != MT_DEMON2) {
@@ -1249,7 +1249,7 @@ void P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type) {
 	th = P_SpawnMobj(x, y, z, type);
 
 	if (th->info->seesound) {
-		FMOD_StartSound(th->info->seesound);
+		S_StartSound(th, th->info->seesound);
 	}
 
 	P_SetTarget(&th->target, source);
@@ -1299,7 +1299,7 @@ mobj_t* P_SpawnMissile(mobj_t* source, mobj_t* dest, mobjtype_t type,
 	th = P_SpawnMobj(x, y, z, type);
 
 	if (th->info->seesound) {
-		FMOD_StartSound(th->info->seesound);
+		S_StartSound(th, th->info->seesound);
 	}
 
 	P_SetTarget(&th->target, source);        // where it came from

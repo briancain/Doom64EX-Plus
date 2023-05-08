@@ -1451,7 +1451,7 @@ boolean PTR_UseTraverse(intercept_t* in) {
             // [kex] don't spam oof sound if usecontext is on
             //
             if (!usecontext) {
-                FMOD_StartSound(sfx_noway);
+                S_StartSound(usething, sfx_noway);
             }
 
             return false;    // can't use through a wall
@@ -1467,7 +1467,7 @@ boolean PTR_UseTraverse(intercept_t* in) {
 
     if (!(in->d.line->special & MLU_USE) || !P_CheckUseHeight(in->d.line, usething)) {
         if (!usecontext) {
-            FMOD_StartSound(sfx_noway);
+            S_StartSound(usething, sfx_noway);
         }
         return false;
     }
@@ -1640,7 +1640,7 @@ boolean PIT_ChangeSector(mobj_t* thing) {
     if (thing->health <= 0 && thing->tics == -1) {
         if (thing->state != &states[S_CORPSE]) {
             P_SetMobjState(thing, S_CORPSE);
-            FMOD_StartSound(sfx_slop);
+            S_StartSound(thing, sfx_slop);
         }
 
         // keep checking

@@ -132,7 +132,7 @@ void F_Start(void) {
 	finalePal.b = 0;
 
 	// hack - force-play seesound from first cast
-	FMOD_StartSound(mobjinfo[castorder[castnum].type].seesound);
+	S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
 }
 
 //
@@ -172,7 +172,7 @@ int F_Ticker(void) {
 	finalePal.b = MIN(finalePal.b += 2, 250);
 
 	if (!castdeath && castdying) {
-		FMOD_StartSound(sfx_shotgun);
+		S_StartSound(NULL, sfx_shotgun);
 		//I_StartSound(mobjinfo[castorder[castnum].type].deathsound);
 		caststate = &states[mobjinfo[castorder[castnum].type].deathstate];
 		casttics = caststate->info_tics;
@@ -203,7 +203,7 @@ int F_Ticker(void) {
 		finalePal.b = 0;
 
 		if (mobjinfo[castorder[castnum].type].seesound) {
-			FMOD_StartSound(mobjinfo[castorder[castnum].type].seesound);
+			S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
 		}
 
 		caststate = &states[mobjinfo[castorder[castnum].type].seestate];
@@ -286,7 +286,7 @@ int F_Ticker(void) {
 			}
 
 			if (sound) {
-				FMOD_StartSound(sound);
+				S_StartSound(NULL, sound);
 			}
 		}
 	}

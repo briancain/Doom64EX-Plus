@@ -771,7 +771,7 @@ void P_SpawnDelayTimer(line_t* line, void (*func)(void)) {
 void T_Quake(quake_t* quake) { // 0x8000EDE8
 	if ((--quake->tics) == 0)
 	{
-		FMOD_StartSound(sfx_quake);
+		FMOD_StopSound();
 		quakeviewx = 0;
 		quakeviewy = 0;
 		P_RemoveThinker(&quake->thinker);
@@ -794,7 +794,7 @@ static void P_SpawnQuake(int tics) {
 	quake->thinker.function.acp1 = (actionf_p1)T_Quake;
     quake->tics = tics;
 
-	FMOD_StartSound(sfx_quake);
+	FMOD_StopSound();
 }
 
 //
@@ -1752,7 +1752,7 @@ boolean P_UseSpecialLine(mobj_t* thing, line_t* line, int side) {
 			if (!player->cards[it_bluecard] && !player->cards[it_blueskull]) {
 				player->message = PD_BLUE;
 				player->messagepic = 0;
-				FMOD_StartSound(sfx_noway);
+				S_StartSound(thing, sfx_noway);
 				player->tryopen[tryopentype[0]] = true;
 				return false;
 			}
@@ -1761,7 +1761,7 @@ boolean P_UseSpecialLine(mobj_t* thing, line_t* line, int side) {
 			if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull]) {
 				player->message = PD_YELLOW;
 				player->messagepic = 1;
-				FMOD_StartSound(sfx_noway);
+				S_StartSound(thing, sfx_noway);
 				player->tryopen[tryopentype[1]] = true;
 				return false;
 			}
@@ -1770,7 +1770,7 @@ boolean P_UseSpecialLine(mobj_t* thing, line_t* line, int side) {
 			if (!player->cards[it_redcard] && !player->cards[it_redskull]) {
 				player->message = PD_RED;
 				player->messagepic = 2;
-				FMOD_StartSound(sfx_noway);
+				S_StartSound(thing, sfx_noway);
 				player->tryopen[tryopentype[2]] = true;
 				return false;
 			}
@@ -1957,7 +1957,7 @@ void P_UpdateSpecials(void) {
 					break;
 				}
 
-				FMOD_StartSound(sfx_switch1);
+				S_StartSound((mobj_t*)buttonlist[i].soundorg, sfx_switch1);
 				dmemset(&buttonlist[i], 0, sizeof(button_t));
 			}
 		}
@@ -2184,7 +2184,7 @@ boolean P_StartSound(int index)
 		int dm_end = W_GetNumForName("DS_END");
 		if (index + dm_start >= dm_end - 1) return false;
 	}
-	FMOD_StartSound(index);
+	S_StartSound(players[consoleplayer].mo, index);
 	return true;
 }
 

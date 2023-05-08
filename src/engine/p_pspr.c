@@ -150,10 +150,10 @@ void P_BringUpWeapon(player_t* player) {
 	}
 
 	if (player->pendingweapon == wp_chainsaw) {
-		FMOD_StartSound(sfx_sawup);
+		S_StartSound(player->mo, sfx_sawup);
 	}
 	else if (player->pendingweapon == wp_plasma) {
-		FMOD_StartSFXLoop(sfx_electric);
+		S_StartSound(player->mo, sfx_electric);
 	}
 
 	newstate = weaponinfo[player->pendingweapon].upstate;
@@ -458,7 +458,7 @@ void A_Punch(player_t* player, pspdef_t* psp) {
 
 	// turn to face target
 	if (linetarget) {
-		FMOD_StartSound(sfx_punch);
+		S_StartSound(player->mo, sfx_punch);
 		player->mo->angle = R_PointToAngle2(player->mo->x, player->mo->y,
 			linetarget->x, linetarget->y);
 	}
@@ -487,10 +487,10 @@ void A_Saw (player_t *player, pspdef_t *psp) // 8001BC1C
 
 	if (!linetarget)
 	{
-		FMOD_StartSound(sfx_saw1);
+		S_StartSound(player->mo, sfx_saw1);
 		return;
 	}
-	FMOD_StartSound(sfx_saw2);
+	S_StartSound(player->mo, sfx_saw2);
 
 	/* turn to face target */
 	angle = R_PointToAngle2 (player->mo->x, player->mo->y, linetarget->x, linetarget->y);
@@ -516,7 +516,7 @@ void A_Saw (player_t *player, pspdef_t *psp) // 8001BC1C
 //
 
 void A_ChainSawReady(player_t* player, pspdef_t* psp) {
-	FMOD_StartSound(sfx_sawidle);
+	S_StartSound(player->mo, sfx_sawidle);
 	A_WeaponReady(player, psp);
 }
 
@@ -526,7 +526,6 @@ void A_ChainSawReady(player_t* player, pspdef_t* psp) {
 
 void A_FireMissile(player_t* player, pspdef_t* psp) {
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
-	FMOD_StartSound(sfx_missile);
 	P_SpawnPlayerMissile(player->mo, MT_PROJ_ROCKET);
 
 	player->recoilpitch = RECOILPITCH;
@@ -623,7 +622,7 @@ void P_GunShot(mobj_t* mo, boolean accurate) {
 //
 void A_FirePistol(player_t* player, pspdef_t* psp)
 {
-	FMOD_StartSound(sfx_pistol);
+	S_StartSound(player->mo, sfx_pistol);
 
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
@@ -639,7 +638,7 @@ void A_FirePistol(player_t* player, pspdef_t* psp)
 void A_FireShotgun(player_t* player, pspdef_t* psp) {
 	int i;
 
-	FMOD_StartSound(sfx_shotgun);
+	S_StartSound(player->mo, sfx_shotgun);
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
@@ -662,7 +661,7 @@ void A_FireShotgun2(player_t* player, pspdef_t* psp) {
 	angle_t     angle;
 	int         damage;
 
-	FMOD_StartSound(sfx_sht2fire);
+	S_StartSound(player->mo, sfx_sht2fire);
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 	player->ammo[weaponinfo[player->readyweapon].ammo] -= 2;
 
@@ -696,7 +695,7 @@ void A_FireCGun(player_t* player, pspdef_t* psp) {
 		return;
 	}
 
-	FMOD_StartSound(sfx_pistol);
+	S_StartSound(player->mo, sfx_pistol);
 
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 	player->ammo[weaponinfo[player->readyweapon].ammo]--;
@@ -783,7 +782,7 @@ void A_BFGSpray(mobj_t* mo) {
 //
 
 void A_BFGsound(player_t* player, pspdef_t* psp) {
-	FMOD_StartSound(sfx_bfg);
+	S_StartSound(player->mo, sfx_bfg);
 }
 
 //
@@ -791,7 +790,7 @@ void A_BFGsound(player_t* player, pspdef_t* psp) {
 //
 
 void A_LoadShotgun2(player_t* player, pspdef_t* psp) {
-	FMOD_StartSound(sfx_sht2load1);
+	S_StartSound(player->mo, sfx_sht2load1);
 }
 
 //
@@ -799,7 +798,7 @@ void A_LoadShotgun2(player_t* player, pspdef_t* psp) {
 //
 
 void A_CloseShotgun2(player_t* player, pspdef_t* psp) {
-	FMOD_StartSound(sfx_sht2load2);
+	S_StartSound(player->mo, sfx_sht2load2);
 }
 
 //
@@ -1080,7 +1079,7 @@ void A_FireLaser(player_t* player, pspdef_t* psp) {
 		}
 	}
 
-	FMOD_StartSound(sfx_laser);
+	S_StartSound(player->mo, sfx_laser);
 	P_SetMobjState(player->mo, S_PLAY_ATK2);
 	P_SetPsprite(player, ps_flash, weaponinfo[player->readyweapon].flashstate);
 }

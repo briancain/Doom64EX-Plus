@@ -785,7 +785,7 @@ void P_TouchSpecialThing(mobj_t* special, mobj_t* toucher) {
 	player->bonuscount += BONUSADD;
 
 	if (player == &players[consoleplayer]) {
-		FMOD_StartSound(sound);
+		S_StartSound(NULL, sound);
 	}
 }
 

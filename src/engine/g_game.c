@@ -1298,7 +1298,7 @@ boolean G_CheckSpot(int playernum, mapthing_t* mthing) {
 	);
 
 	if (players[playernum].viewz != 1) {
-		FMOD_StartSound(sfx_telept);    // don't start sound on first frame
+		S_StartSound(mo, sfx_telept);    // don't start sound on first frame
 	}
 
 	return true;

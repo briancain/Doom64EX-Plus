@@ -65,10 +65,6 @@ struct Sound {
 };
 
 struct Sound sound;
-extern FMOD_VECTOR fmod_vec_position;
-extern FMOD_VECTOR fmod_vec_velocity;
-extern FMOD_VECTOR fmod_vec_forward;
-extern FMOD_VECTOR fmod_vec_up;
 
 int I_GetMaxChannels(void);
 int I_GetVoiceCount(void);
@@ -80,7 +76,7 @@ void Seq_SetGain(float db);
 
 void FMOD_CreateMusicTracksInit(void);
 void FMOD_CreateSfxTracksInit(void);
-int FMOD_StartSound(int sfx_id);
+int FMOD_StartSound(int sfx_id, FMOD_VECTOR* origin, int volume, int pan, float reverb);
 int FMOD_StartSoundPlasma(int sfx_id);
 int FMOD_StopSound(void);
 int FMOD_StartMusic(int mus_id);

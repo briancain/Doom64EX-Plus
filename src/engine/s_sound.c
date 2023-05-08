@@ -307,7 +307,7 @@ void S_UpdateSounds(void) {
 void S_StartSound(mobj_t* origin, int sfx_id) {
     int volume;
     int sep;
-    int reverb;
+    float reverb;
 
     if(nosound) {
         return;
@@ -323,7 +323,7 @@ void S_StartSound(mobj_t* origin, int sfx_id) {
         volume = NORM_VOLUME;
     }
 
-    reverb = 0;
+    reverb = 0.0f;
 
     if(origin) {
         subsector_t* subsector;
@@ -331,15 +331,16 @@ void S_StartSound(mobj_t* origin, int sfx_id) {
         subsector = R_PointInSubsector(origin->x, origin->y);
 
         if(subsector->sector->flags & MS_REVERB) {
-            reverb = 16;
+            reverb = 16.0f;
         }
         else if(subsector->sector->flags & MS_REVERBHEAVY) {
-            reverb = 32;
+            reverb = 32.0f;
         }
     }
 
     // Assigns the handle to one of the channels in the mix/output buffer.
-    I_StartSound(sfx_id, (sndsrc_t*)origin, volume, sep, reverb);
+    FMOD_StartSound(sfx_id, (FMOD_VECTOR*)origin, volume, sep, reverb);
+    //I_StartSound(sfx_id, (sndsrc_t*)origin, volume, sep, reverb);
 }
 
 //

@@ -85,7 +85,7 @@ static void R_CloudThunder(void) {
 	}
 
 	if (lightningCounter == 0) {
-		FMOD_StartSound(sfx_thndrlow + (M_Random() & 1));
+		S_StartSound(NULL, sfx_thndrlow + (M_Random() & 1));
 		thundertic = (1 + (M_Random() & 1));
 	}
 
