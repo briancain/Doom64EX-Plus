@@ -108,6 +108,12 @@ CVAR_CMD(s_driver, sndio)
 static float INCHES_PER_METER = 39.3701f;
 int num_sfx;
 
+FMOD_REVERB_PROPERTIES reverb_prop = FMOD_PRESET_GENERIC;
+
+FMOD_VECTOR fmod_reverb_position = { -8.0f, 2.0f, 2.0f };
+float min_dist = 1.0f;
+float max_dist = 15.0f;
+
 FMOD_BOOL IsPlaying;
 FMOD_BOOL Paused = FALSE;
 
@@ -1175,6 +1181,8 @@ void I_InitSequencer(void) {
 
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system, 92, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system_music,128, FMOD_INIT_NORMAL, NULL));
+
+    FMOD_ERROR_CHECK(FMOD_System_CreateReverb3D(sound.fmod_studio_system, reverb.fmod_reverb));
     
     FMOD_ERROR_CHECK(FMOD_Sound_Set3DMinMaxDistance(sound.fmod_studio_sound[num_sfx], 0.5f * INCHES_PER_METER, 5000.0f * INCHES_PER_METER));
     FMOD_ERROR_CHECK(FMOD_System_Set3DSettings(sound.fmod_studio_system, 1.0, INCHES_PER_METER, 1.0f));
@@ -1305,6 +1313,14 @@ void I_RemoveSoundSource(int c) {
 
 void I_UpdateChannel(int c, int volume, int pan) {
     channel_t* chan;
+
+    FMOD_Channel_Set3DMinMaxDistance(sound.fmod_studio_channel, 1, 50);
+
+    FMOD_Reverb3D_Set3DAttributes(reverb.fmod_reverb, &fmod_reverb_position, min_dist, max_dist);
+
+    FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, (FMOD_VECTOR*)volume, NULL);
+
+    FMOD_Channel_SetMode(sound.fmod_studio_channel, FMOD_3D_WORLDRELATIVE);
 
     chan = &playlist[c];
     chan->basevol = (float)volume;
@@ -1437,69 +1453,75 @@ void I_StopSound(sndsrc_t* origin, int sfx_id) {
 
 // FMOD Studio SFX API
 
-int FMOD_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, float reverb) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
-    FMOD_ChannelGroup_SetReverbProperties(sound.master, 1, reverb);
+int FMOD_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, float properties_reverb) {
+
+    FMOD_System_SetReverbProperties(sound.fmod_studio_system, (int)properties_reverb, & reverb_prop);
+
+    //FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
+
+    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
 
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound[sfx_id], sound.master, 0, &sound.fmod_studio_channel));
 
-    FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, (FMOD_VECTOR*)origin, NULL);
-
-    FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
-    FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
 
     return sfx_id;
 }
 
 // Not proud of it here but it is a necessary evil for now, to prevent cut-off between plasma fire and plasma ball boom
 int FMOD_StartSoundPlasma(int sfx_id) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound_plasma[sfx_id], sound.master, 0, &sound.fmod_studio_channel));
 
-    //FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, &fmod_vec_position, NULL));
     FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
     FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
+
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
 
     return sfx_id;
 }
 
 int FMOD_StartSFXLoop(int sfx_id) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
     FMOD_Channel_SetVolume(sound.fmod_studio_channel_loop, 20.0f);
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound[sfx_id], sound.master, 0, &sound.fmod_studio_channel_loop));
 
     //FMOD_ERROR_CHECK(FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, &fmod_vec_position, NULL));
     FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
 
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
+
     return sfx_id;
 }
 
 int FMOD_StopSFXLoop(void) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, true);
     FMOD_ERROR_CHECK(FMOD_Channel_Stop(sound.fmod_studio_channel_loop));
+
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, true);
 
     return 0;
 }
 
 int FMOD_StopSound(void) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel, true);
     FMOD_ERROR_CHECK(FMOD_Channel_Stop(sound.fmod_studio_channel));
+
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel, true);
 
     return 0;
 }
 
 int FMOD_StartMusic(int mus_id) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, false);
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system_music, sound.fmod_studio_music[mus_id], sound.master_music, 0, &sound.fmod_studio_channel_music));
 
     FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel_music, false));
+
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, false);
 
     return mus_id;
 }
 
 void FMOD_StopMusic(void) {
-    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, true);
     FMOD_ERROR_CHECK(FMOD_Channel_Stop(sound.fmod_studio_channel_music));
+
+    FMOD_Channel_SetPaused(sound.fmod_studio_channel_music, true);
 }
 
 void FMOD_PauseMusic(void) {
