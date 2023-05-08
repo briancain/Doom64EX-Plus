@@ -76,7 +76,7 @@ void Seq_SetGain(float db);
 
 void FMOD_CreateMusicTracksInit(void);
 void FMOD_CreateSfxTracksInit(void);
-int FMOD_StartSound(int sfx_id, FMOD_VECTOR* origin, int volume, int pan, float reverb);
+int FMOD_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, float reverb);
 int FMOD_StartSoundPlasma(int sfx_id);
 int FMOD_StopSound(void);
 int FMOD_StartMusic(int mus_id);

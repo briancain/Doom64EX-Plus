@@ -1437,13 +1437,14 @@ void I_StopSound(sndsrc_t* origin, int sfx_id) {
 
 // FMOD Studio SFX API
 
-int FMOD_StartSound(int sfx_id, FMOD_VECTOR* origin, int volume, int pan, float reverb) {
+int FMOD_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, float reverb) {
     FMOD_Channel_SetPaused(sound.fmod_studio_channel_loop, false);
     FMOD_ChannelGroup_SetReverbProperties(sound.master, 1, reverb);
-    FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, origin, NULL);
-    FMOD_System_Set3DListenerAttributes(sound.fmod_studio_system, 32, origin, NULL, NULL, NULL);
 
     FMOD_ERROR_CHECK(FMOD_System_PlaySound(sound.fmod_studio_system, sound.fmod_studio_sound[sfx_id], sound.master, 0, &sound.fmod_studio_channel));
+
+    FMOD_Channel_Set3DAttributes(sound.fmod_studio_channel, (FMOD_VECTOR*)origin, NULL);
+
     FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
     FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
 

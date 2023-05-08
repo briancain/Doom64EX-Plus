@@ -289,9 +289,11 @@ void S_UpdateSounds(void) {
                 players[consoleplayer].cameratarget == players[consoleplayer].mo) {
             audible = 1;
             sep = NORM_SEP;
+            FMOD_System_Set3DListenerAttributes(sound.fmod_studio_system, 32, (FMOD_VECTOR*)source->x, NULL, (FMOD_VECTOR*)source->y, NULL);
         }
         else {
             audible = S_AdjustSoundParams(source->x, source->y, &volume, &sep);
+            FMOD_System_Set3DListenerAttributes(sound.fmod_studio_system, 32, (FMOD_VECTOR*)source->x, NULL, (FMOD_VECTOR*)source->y, NULL);
         }
 
         if(audible) {
@@ -339,7 +341,7 @@ void S_StartSound(mobj_t* origin, int sfx_id) {
     }
 
     // Assigns the handle to one of the channels in the mix/output buffer.
-    FMOD_StartSound(sfx_id, (FMOD_VECTOR*)origin, volume, sep, reverb);
+    FMOD_StartSound(sfx_id, (sndsrc_t*)origin, volume, sep, reverb);
     //I_StartSound(sfx_id, (sndsrc_t*)origin, volume, sep, reverb);
 }
 
@@ -396,6 +398,7 @@ int S_AdjustSoundParams(fixed_t x, fixed_t y, int* vol, int* sep) {
         // distance effect
         approx_dist >>= FRACBITS;
         *vol = (((-approx_dist << 7) + (approx_dist)) + S_MAX_DIST) / S_ATTENUATOR;
+        FMOD_System_Set3DListenerAttributes(sound.fmod_studio_system, 32, (FMOD_VECTOR*)vol, NULL, NULL, NULL);
     }
 
     return (*vol > 0);
