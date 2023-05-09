@@ -339,7 +339,7 @@ void S_StartSound(mobj_t* origin, int sfx_id) {
     }
 
     // Assigns the handle to one of the channels in the mix/output buffer.
-    FMOD_StartSound(sfx_id, (sndsrc_t*)origin, volume, sep, reverb);
+    FMOD_StartSound(sfx_id, (sndsrc_t*)origin, (float)volume, sep, reverb);
 }
 
 //

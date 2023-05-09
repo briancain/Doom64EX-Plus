@@ -1182,7 +1182,7 @@ void I_InitSequencer(void) {
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system, 92, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_PROFILE_ENABLE, NULL));
     FMOD_ERROR_CHECK(FMOD_System_Init(sound.fmod_studio_system_music,128, FMOD_INIT_NORMAL, NULL));
 
-    FMOD_ERROR_CHECK(FMOD_System_CreateReverb3D(sound.fmod_studio_system, reverb.fmod_reverb));
+   // FMOD_ERROR_CHECK(FMOD_System_CreateReverb3D(sound.fmod_studio_system, reverb.fmod_reverb));
     
     FMOD_ERROR_CHECK(FMOD_Sound_Set3DMinMaxDistance(sound.fmod_studio_sound[num_sfx], 0.5f * INCHES_PER_METER, 5000.0f * INCHES_PER_METER));
     FMOD_ERROR_CHECK(FMOD_System_Set3DSettings(sound.fmod_studio_system, 1.0, INCHES_PER_METER, 1.0f));
@@ -1455,8 +1455,9 @@ void I_StopSound(sndsrc_t* origin, int sfx_id) {
 
 int FMOD_StartSound(int sfx_id, sndsrc_t* origin, int volume, int pan, float properties_reverb) {
 
-    FMOD_System_SetReverbProperties(sound.fmod_studio_system, (int)properties_reverb, & reverb_prop);
+    FMOD_System_SetReverbProperties(sound.fmod_studio_system, (int)properties_reverb, &reverb_prop);
 
+    //FMOD_Channel_SetVolume(sound.fmod_studio_channel, (float)volume);
     //FMOD_ERROR_CHECK(FMOD_Channel_SetVolumeRamp(sound.fmod_studio_channel, false));
 
     FMOD_ERROR_CHECK(FMOD_Channel_SetPaused(sound.fmod_studio_channel, false));
