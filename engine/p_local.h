@@ -590,7 +590,7 @@ typedef struct {
 	boolean     instant;
 } ceiling_t;
 
-#define CEILSPEEDSLOW   FRACUNIT*0.05
+#define CEILSPEEDSLOW   FRACUNIT*0.05f
 #define CEILSPEED       FRACUNIT*2
 #define CEILWAIT        150
 #define MAXCEILINGS     1024

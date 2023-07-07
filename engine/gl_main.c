@@ -212,7 +212,6 @@ boolean    usingGL = false;
 float       max_anisotropic = 0;
 boolean    widescreen = false;
 
-CVAR_EXTERNAL(v_vsync);
 CVAR_EXTERNAL(r_filter);
 CVAR_EXTERNAL(r_texturecombiner);
 CVAR_EXTERNAL(r_anisotropic);
@@ -277,21 +276,7 @@ static boolean FindExtension(const char *ext) {
 
 void GL_SetSwapInterval(void)
 {
-    typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALPROC)(int);
 
-#ifdef _WIN32
-    PFNWGLSWAPINTERVALPROC wglSwapIntervalEXT = 0;
-    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALPROC)wglGetProcAddress("wglSwapIntervalEXT");
-
-    if (v_vsync.value > 0 && wglSwapIntervalEXT)
-        wglSwapIntervalEXT(-1);
-#else
-    PFNWGLSWAPINTERVALPROC glXSwapIntervalEXT = 0;
-    glXSwapIntervalEXT = (PFNWGLSWAPINTERVALPROC)glXGetProcAddress("glXSwapIntervalEXT");
-
-    if (v_vsync.value > 0 && glXSwapIntervalEXT)
-        glXSwapIntervalEXT(-1);
-#endif
 }
 
 //
@@ -352,7 +337,7 @@ void GL_SetOrtho(boolean stretch) {
 	glLoadIdentity();
 
     if(widescreen && !stretch) {
-        const float ratio = (4.0f / 3.0f);
+        float ratio = (4.0f / 3.0f);
         float fitwidth = ViewHeight * ratio;
         float fitx = (ViewWidth - fitwidth) / 2.0f;
 

@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*-
+// Emacs style mode select   -*- C -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2007-2012 Samuel Villarreal
@@ -131,7 +131,7 @@ static SDL_sem* semaphore = NULL;
 #define SEMAPHORE_UNLOCK()  SDL_SemPost(semaphore); }
 
 // 20120205 villsa - bool to determine if sequencer is ready or not
-static int seqready = 0;
+static boolean seqready = false;
 
 //
 // DEFINES
@@ -232,11 +232,11 @@ typedef struct {
     unsigned int      starttime;
     unsigned int      curtime;
     chanstate_e state;
-    int         paused;
+    boolean         paused;
 
     // read by audio thread but only
     // modified by game code
-    int         stop;
+    boolean         stop;
     float       basevol;
 } channel_t;
 
@@ -386,7 +386,8 @@ static void Seq_WaitOnSignal(doomseq_t* seq)
         if(seq->signal == SEQ_SIGNAL_READY)
             break;
     }
-}*/
+}
+#endif
 
 //
 // Chan_SetMusicVolume
@@ -439,8 +440,8 @@ static unsigned char Chan_GetNextMidiByte(channel_t* chan) {
 // Checks if the midi reader has reached the end
 //
 
-static int Chan_CheckTrackEnd(channel_t* chan) {
-    return ((int)(chan->pos - chan->song->data) >= chan->song->length);
+static boolean Chan_CheckTrackEnd(channel_t* chan) {
+    return ((boolean)(chan->pos - chan->song->data) >= chan->song->length);
 }
 
 //
@@ -515,7 +516,7 @@ static void Song_ClearPlaylist(void) {
 // Chan_RemoveTrackFromPlaylist
 //
 
-static int Chan_RemoveTrackFromPlaylist(doomseq_t* seq, channel_t* chan) {
+static boolean Chan_RemoveTrackFromPlaylist(doomseq_t* seq, channel_t* chan) {
     if (!chan->song || !chan->track) {
         return false;
     }
@@ -891,7 +892,7 @@ static const signalhandler seqsignallist[MAXSIGNALTYPES] = {
 // Chan_CheckState
 //
 
-static int Chan_CheckState(doomseq_t* seq, channel_t* chan) {
+static boolean Chan_CheckState(doomseq_t* seq, channel_t* chan) {
     if (chan->state == CHAN_STATE_ENDED) {
         return true;
     }
@@ -1046,7 +1047,7 @@ static void Seq_RunSong(doomseq_t* seq, int msecs) {
 // Allocate data for all tracks for a midi song
 //
 
-static int Song_RegisterTracks(song_t* song) {
+static boolean Song_RegisterTracks(song_t* song) {
     int i;
     unsigned char* data;
 
@@ -1078,7 +1079,7 @@ static int Song_RegisterTracks(song_t* song) {
 // Allocate data for all midi songs
 //
 
-static int Seq_RegisterSongs(doomseq_t* seq) {
+static boolean Seq_RegisterSongs(doomseq_t* seq) {
     int i;
     int start;
     int end;
@@ -1156,7 +1157,9 @@ static void Seq_Shutdown(doomseq_t* seq) {
     //
     // fluidsynth cleanup stuff
     //
+#ifdef OLD_FLUIDSYNTH
     delete_fluid_audio_driver(seq->driver);
+#endif
     delete_fluid_synth(seq->synth);
     delete_fluid_settings(seq->settings);
 
@@ -1173,10 +1176,10 @@ static void Seq_Shutdown(doomseq_t* seq) {
 
 static int SDLCALL Thread_PlayerHandler(void* param) {
     doomseq_t* seq = (doomseq_t*)param;
-    long long start = SDL_GetTicks64();
-    long long delay = 0;
+    uintptr_t start = GetTicks();
+    uintptr_t delay = 0;
     int status;
-    long long count = 0;
+    uintptr_t count = 0;
     signalhandler signal;
 
     while (1) {
@@ -1203,14 +1206,14 @@ static int SDLCALL Thread_PlayerHandler(void* param) {
         //
         // play some songs
         //
-        Seq_RunSong(seq, SDL_GetTicks64() - start);
+        Seq_RunSong(seq, GetTicks() - start);
         count++;
 
         // try to avoid incremental time de-syncs
-        delay = count - (SDL_GetTicks64() - start);
+        delay = count - (GetTicks() - start);
 
         if (delay > 0) {
-            SDL_Delay(delay);
+            SDL_Delay((unsigned int)delay);
         }
     }
 
@@ -1222,7 +1225,7 @@ static int SDLCALL Thread_PlayerHandler(void* param) {
 //
 
 void I_InitSequencer(void) {
-    int sffound;
+    boolean sffound;
     char *sfpath;
 	SDL_AudioDeviceID audio_device;
     SDL_AudioSpec required_spec;
@@ -1257,7 +1260,7 @@ void I_InitSequencer(void) {
     // off-sync when uncapped framerates are enabled but for some
     // reason, calling SDL_GetTicks before initalizing the thread
     // will reduce the chances of it happening
-    SDL_GetTicks64();
+    GetTicks();
 
     doomseq.thread = SDL_CreateThread(Thread_PlayerHandler, "SynthPlayer", &doomseq);
     if (doomseq.thread == NULL) {
@@ -1296,14 +1299,6 @@ void I_InitSequencer(void) {
         return;
     }
 #endif
-    //
-    // init audio driver
-    //
-    doomseq.driver = new_fluid_audio_driver(doomseq.settings, doomseq.synth);
-    if (doomseq.driver == NULL) {
-        CON_Warnf("I_InitSequencer: failed to create audio driver");
-        return;
-    }
 
     //
     // load soundfont

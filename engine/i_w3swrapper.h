@@ -113,6 +113,12 @@ char* w3sstrlwr(char* str);
 #define GetBasePath	SDL_GetBasePath
 #endif
 
+#ifdef _WIN64
+#define GetTicks SDL_GetTicks64
+#else
+#define GetTicks SDL_GetTicks
+#endif
+
 #if defined(__linux__) || defined(__OpenBSD__) || defined(VITA)
 #define Free	free
 #else

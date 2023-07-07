@@ -595,7 +595,6 @@ void R_DrawPSprite(pspdef_t* psp, sector_t* sector, player_t* player) {
 	float           v1;
 	float           v2;
 	vtx_t           v[4];
-	int				l;	
 	alpha = (player->mo->alpha * psp->alpha) / 0xff;
 
 	// get sprite frame/defs

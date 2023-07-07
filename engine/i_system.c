@@ -100,10 +100,10 @@ static Uint64 basetime = 0;
 //
 
 static int I_GetTimeNormal(void) {
-	Uint64 ticks;
-	Uint64 tic_division = 1000;
+	uintptr_t ticks;
+	uintptr_t tic_division = 1000;
 
-	ticks = SDL_GetTicks64();
+	ticks = GetTicks();
 
 	if (basetime == 0) {
 		basetime = ticks;
@@ -111,7 +111,7 @@ static int I_GetTimeNormal(void) {
 
 	ticks -= basetime;
 
-	return (ticks * TICRATE) / tic_division;
+	return (int)(ticks * TICRATE) / tic_division;
 }
 
 //
@@ -158,7 +158,7 @@ boolean I_StartDisplay(void) {
 		return false;
 	}
 
-	start_displaytime = SDL_GetTicks64();
+	start_displaytime = GetTicks();
 	InDisplay = true;
 
 	return true;
@@ -169,7 +169,7 @@ boolean I_StartDisplay(void) {
 //
 
 void I_EndDisplay(void) {
-	displaytime = SDL_GetTicks64() - start_displaytime;
+	displaytime = GetTicks() - start_displaytime;
 	InDisplay = false;
 }
 
@@ -178,10 +178,10 @@ void I_EndDisplay(void) {
 //
 
 fixed_t I_GetTimeFrac(void) {
-	Uint64 now;
+	uintptr_t now;
 	fixed_t frac;
 
-	now = SDL_GetTicks64();
+	now = GetTicks();
 
 	if (rendertic_step == 0) {
 		return FRACUNIT;
@@ -205,9 +205,9 @@ fixed_t I_GetTimeFrac(void) {
 //
 
 int I_GetTimeMS(void) {
-	Uint64 ticks;
+	uintptr_t ticks;
 
-	ticks = SDL_GetTicks64();
+	ticks = GetTicks();
 
 	if (basetime == 0) {
 		basetime = ticks;
@@ -221,7 +221,7 @@ int I_GetTimeMS(void) {
 //
 
 void I_GetTime_SaveMS(void) {
-	rendertic_start = SDL_GetTicks64();
+	rendertic_start = GetTicks();
 	rendertic_next = (unsigned int)((rendertic_start * rendertic_msec + 1.0f) / rendertic_msec);
 	rendertic_step = rendertic_next - rendertic_start;
 }
@@ -376,9 +376,9 @@ int (*I_GetTime)(void) = I_GetTime_Error;
 // I_GetRandomTimeSeed
 //
 
-unsigned long I_GetRandomTimeSeed(void) {
+uintptr_t I_GetRandomTimeSeed(void) {
 	// not exactly random....
-	return SDL_GetTicks64();
+	return GetTicks();
 }
 
 //
