@@ -212,7 +212,7 @@ boolean    usingGL = false;
 float       max_anisotropic = 0;
 boolean    widescreen = false;
 
-CVAR_EXTERNAL(v_vsync);
+CVAR(v_vsync, "vsync");
 CVAR_EXTERNAL(r_filter);
 CVAR_EXTERNAL(r_texturecombiner);
 CVAR_EXTERNAL(r_anisotropic);

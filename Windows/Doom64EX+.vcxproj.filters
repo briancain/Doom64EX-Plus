@@ -23,7 +23,6 @@
     <ClCompile Include="..\engine\f_finale.c" />
     <ClCompile Include="..\engine\gl_draw.c" />
     <ClCompile Include="..\engine\gl_main.c" />
-    <ClCompile Include="..\engine\gl_shader.c" />
     <ClCompile Include="..\engine\gl_texture.c" />
     <ClCompile Include="..\engine\gl_utils.c" />
     <ClCompile Include="..\engine\g_actions.c" />
@@ -129,7 +128,6 @@
     <ClInclude Include="..\engine\f_finale.h" />
     <ClInclude Include="..\engine\gl_draw.h" />
     <ClInclude Include="..\engine\gl_main.h" />
-    <ClInclude Include="..\engine\gl_shader.h" />
     <ClInclude Include="..\engine\gl_texture.h" />
     <ClInclude Include="..\engine\gl_utils.h" />
     <ClInclude Include="..\engine\g_actions.h" />

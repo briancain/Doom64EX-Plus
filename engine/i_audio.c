@@ -315,7 +315,7 @@ typedef int(*signalhandler)(doomseq_t*);
 static void Audio_Play(void* userdata, unsigned char* stream, int len)
 {
     fluid_synth_t* synth = (fluid_synth_t*)userdata;
-    if (fluid_synth_write_s16(synth, len / (2 * sizeof(short)), (short*)stream, 0, NUM_CHANNELS, (short*)stream, 1, NUM_CHANNELS) != FLUID_OK) {
+    if (fluid_synth_write_s16(synth, len / (2 * sizeof(short)), (short*)stream, 0, NUM_CHANNELS, (short*)stream, 1, NUM_CHANNELS) != 0) {
         I_Printf("ERROR: Writing audio with fluid_synth_write_s16 failed!\n");
     }
 }
@@ -386,8 +386,8 @@ static void Seq_WaitOnSignal(doomseq_t* seq)
         if(seq->signal == SEQ_SIGNAL_READY)
             break;
     }
-}*/
-
+}
+#endif
 //
 // Chan_SetMusicVolume
 //
@@ -1290,7 +1290,8 @@ void I_InitSequencer(void) {
     //
     // init audio driver
     //
-    doomseq.driver = new_fluid_audio_driver(doomseq.settings, doomseq.synth);
+    doomseq.driver = 
+        (doomseq.settings, doomseq.synth);
     if (doomseq.driver == NULL) {
         CON_Warnf("I_InitSequencer: failed to create audio driver");
         return;

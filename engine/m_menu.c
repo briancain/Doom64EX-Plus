@@ -2101,7 +2101,6 @@ void M_DrawVideo(void) {
 
 #define DRAWVIDEOITEM2(a, b, c) DRAWVIDEOITEM(a, c[(int)b])
 
-	DRAWVIDEOITEM2(filter, r_filter.value, constfilterType);
 	DRAWVIDEOITEM2(anisotropic, r_anisotropic.value, msgNames);
 	DRAWVIDEOITEM2(windowed, v_windowed.value, msgNames);
 	DRAWVIDEOITEM2(ratio, m_aspectRatio, ratioName);

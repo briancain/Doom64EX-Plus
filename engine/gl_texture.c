@@ -29,7 +29,6 @@
 #define GL_TEXTURE1_ARB				0x84C1
 
 #include "gl_utils.h"
-#include "gl_shader.h"
 #include "doomstat.h"
 #include "r_main.h"
 #include "r_things.h"
