@@ -167,6 +167,7 @@
     <ClCompile Include="..\src\engine\deh_thing.c" />
     <ClCompile Include="..\src\engine\deh_weapon.c" />
     <ClCompile Include="..\src\engine\dgl.c" />
+    <ClCompile Include="..\src\engine\dsdhacked.c" />
     <ClCompile Include="..\src\engine\d_devstat.c" />
     <ClCompile Include="..\src\engine\d_main.c" />
     <ClCompile Include="..\src\engine\d_net.c" />
@@ -254,6 +255,7 @@
     <ClInclude Include="..\src\engine\doomdef.h" />
     <ClInclude Include="..\src\engine\doomstat.h" />
     <ClInclude Include="..\src\engine\doomtype.h" />
+    <ClInclude Include="..\src\engine\dsdhacked.h" />
     <ClInclude Include="..\src\engine\d_think.h" />
     <ClInclude Include="..\src\engine\d_ticcmd.h" />
     <ClInclude Include="..\src\engine\f_finale.h" />

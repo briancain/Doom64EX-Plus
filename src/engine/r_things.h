@@ -45,7 +45,8 @@ void R_ClearSprites(void);
 void R_RenderPlayerSprites(player_t* player);
 void R_DrawThingBBox(void);
 
+// DSDHacked
 extern spritedef_t* spriteinfo;
-extern intptr_t            numsprites;
+extern intptr_t     numsprites;
 
 #endif

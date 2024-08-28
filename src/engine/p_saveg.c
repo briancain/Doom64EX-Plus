@@ -345,7 +345,7 @@ static void saveg_write_mobj_t(mobj_t* mo) {
     saveg_write32(mo->momy);
     saveg_write32(mo->momz);
     saveg_write32(mo->validcount);
-    saveg_write32(mo->state - states);
+    saveg_write32(mo->state - original_states);
     saveg_write32(mo->type);
     saveg_write32(mo->tics);
     saveg_write32(mo->flags);
@@ -390,7 +390,7 @@ static void saveg_read_mobj_t(mobj_t* mo) {
     mo->momy = saveg_read32();
     mo->momz = saveg_read32();
     mo->validcount = saveg_read32();
-    mo->state = &states[saveg_read32()];
+    mo->state = &original_states[saveg_read32()];
     mo->type = saveg_read32();
     mo->tics = saveg_read32();
     mo->flags = saveg_read32();
@@ -425,7 +425,7 @@ static void saveg_read_pspdef_t(pspdef_t* psp) {
 
     state = saveg_read32();
 
-    psp->state = state > 0 ? &states[state] : NULL;
+    psp->state = state > 0 ? &original_states[state] : NULL;
     psp->tics = saveg_read32();
     psp->sx = saveg_read32();
     psp->sy = saveg_read32();
@@ -435,7 +435,7 @@ static void saveg_read_pspdef_t(pspdef_t* psp) {
 }
 
 static void saveg_write_pspdef_t(pspdef_t* psp) {
-    saveg_write32(psp->state ? psp->state - states : 0);
+    saveg_write32(psp->state ? psp->state - original_states : 0);
     saveg_write32(psp->tics);
     saveg_write32(psp->sx);
     saveg_write32(psp->sy);
@@ -1583,7 +1583,7 @@ void P_UnArchiveMobjs(void) {
         P_SetThingPosition(mobj);
         P_LinkMobj(mobj);
 
-        mobj->info = &mobjinfo[mobj->type];
+        mobj->info = &original_mobjinfo[mobj->type];
     }
 
     saveg_read_pad();

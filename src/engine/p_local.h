@@ -88,6 +88,7 @@ extern angle_t frame_pitch;
 extern fixed_t frame_viewx;
 extern fixed_t frame_viewy;
 extern fixed_t frame_viewz;
+extern mobjinfo_t* mobjinfo;
 
 //
 // P_PSPR

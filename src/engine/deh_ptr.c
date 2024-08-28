@@ -50,7 +50,7 @@ static void DEH_PointerInit(void)
     // Initialize list of dehacked pointers
 
     for (i=0; i<NUMSTATES; ++i)
-        codeptrs[i] = states[i].action;
+        codeptrs[i] = original_states[i].action;
 }
 
 static void *DEH_PointerStart(deh_context_t *context, char *line)
@@ -72,7 +72,7 @@ static void *DEH_PointerStart(deh_context_t *context, char *line)
         return NULL;
     }
 
-    return &states[frame_number];
+    return &original_states[frame_number];
 }
 
 static void DEH_PointerParseLine(deh_context_t *context, char *line, void *tag)
@@ -126,7 +126,7 @@ static void DEH_PointerSHA1Sum(sha1_context_t *context)
 
     for (i=0; i<NUMSTATES; ++i)
     {
-        SHA1_UpdateInt32(context, CodePointerIndex(&states[i].action));
+        SHA1_UpdateInt32(context, CodePointerIndex(&original_states[i].action));
     }
 }
 

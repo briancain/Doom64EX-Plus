@@ -71,7 +71,7 @@ boolean P_SetMobjState(mobj_t* mobj, statenum_t state) {
 			return false;
 		}
 
-		st = &states[state];
+		st = &original_states[state];
 		mobj->frame = st->info_frame;
 
 		mobj->state = st;
@@ -135,7 +135,7 @@ void P_SetTarget(mobj_t** mop, mobj_t* targ) {
 //
 
 void P_ExplodeMissile(mobj_t* mo) {
-	if (!P_SetMobjState(mo, mobjinfo[mo->type].deathstate)) {
+	if (!P_SetMobjState(mo, original_mobjinfo[mo->type].deathstate)) {
 		return;
 	}
 
@@ -594,7 +594,7 @@ mobj_t* P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type) {
 
 	mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
 	dmemset(mobj, 0, sizeof(*mobj));
-	info = &mobjinfo[type];
+	info = &original_mobjinfo[type];
 
 	mobj->type = type;
 	mobj->info = info;
@@ -639,7 +639,7 @@ mobj_t* P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type) {
 	// do not set the state with P_SetMobjState,
 	// because action routines can not be called yet
 
-	st = &states[info->spawnstate];
+	st = &original_states[info->spawnstate];
 	mobj->state = st;
 	mobj->tics = st->info_tics;
 	mobj->sprite = st->sprite;
@@ -1029,14 +1029,14 @@ mobj_t* P_SpawnMapThing(mapthing_t* mthing) {
 
 	// find which type to spawn
 	for (i = 0; i < NUMMOBJTYPES; i++) {
-		if (mthing->type == mobjinfo[i].doomednum) {
+		if (mthing->type == original_mobjinfo[i].doomednum) {
 			break;
 		}
 	}
 
 	// don't spawn keycards and players in deathmatch
 
-	if (deathmatch && mobjinfo[i].flags & MF_NOTDMATCH) {
+	if (deathmatch && original_mobjinfo[i].flags & MF_NOTDMATCH) {
 		return NULL;
 	}
 
@@ -1044,7 +1044,7 @@ mobj_t* P_SpawnMapThing(mapthing_t* mthing) {
 
 	if (nomonsters
 		&& (i == MT_SKULL
-			|| (mobjinfo[i].flags & MF_COUNTKILL))) {
+			|| (original_mobjinfo[i].flags & MF_COUNTKILL))) {
 		return NULL;
 	}
 
@@ -1060,7 +1060,7 @@ mobj_t* P_SpawnMapThing(mapthing_t* mthing) {
 	x = INT2F(mthing->x);
 	y = INT2F(mthing->y);
 
-	if (mobjinfo[i].flags & MF_SPAWNCEILING) {
+	if (original_mobjinfo[i].flags & MF_SPAWNCEILING) {
 		z = ONCEILINGZ;
 	}
 	else {

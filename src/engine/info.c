@@ -40,7 +40,7 @@
 
 #include "p_mobj.h"
 
-char* sprnames[NUMSPRITES + 1] = {  //0x5FA30
+char* original_sprnames[NUMSPRITES + 1] = {  //0x5FA30
 	"SPOT", "PLAY", "SARG", "FATT", "POSS", "TROO", "HEAD", "BOSS",
 	"SKUL", "BSPI", "CYBR", "PAIN", "RECT", "MISL", "PLSS", "BFS1",
 	"LASS", "BAL1", "BAL3", "BAL2", "BAL7", "BAL8", "APLS", "MANF",
@@ -155,7 +155,7 @@ void A_VileAttack();
 
 #pragma warning(push)
 #pragma warning(disable:4113)
-state_t states[NUMSTATES] = {      //0x4DFF4
+state_t original_states[NUMSTATES] = {      //0x4DFF4
 	/*S_NULL*/              { SPR_SPOT, 0, -1, {NULL}, S_NULL },
 
 	/*S_PLAY*/              { SPR_PLAY, 0, -1, {NULL}, S_NULL },
@@ -1372,7 +1372,7 @@ state_t states[NUMSTATES] = {      //0x4DFF4
 
 #pragma warning(pop)
 
-mobjinfo_t mobjinfo[NUMMOBJTYPES] = {      //0x51E38
+mobjinfo_t original_mobjinfo[NUMMOBJTYPES] = {      //0x51E38
 	{
 		/*MT_PLAYER*/
 		-1,        //doomednum

@@ -327,7 +327,7 @@ void P_MovePlayer(player_t* player) {
         }
     }
 
-    if ((cmd->forwardmove || cmd->sidemove) && player->mo->state == &states[S_PLAY]) {
+    if ((cmd->forwardmove || cmd->sidemove) && player->mo->state == &original_states[S_PLAY]) {
         P_SetMobjState(player->mo, S_PLAY_RUN1);
     }
 
@@ -456,7 +456,7 @@ void P_PlayerXYMovment(mobj_t* mo) {
     if (mo->momx > -STOPSPEED && mo->momx < STOPSPEED &&
         mo->momy > -STOPSPEED && mo->momy < STOPSPEED) {
         // if in a walking frame, stop moving
-        if (((unsigned)(mo->state - states) - S_PLAY_RUN1) < 4) {
+        if (((unsigned)(mo->state - original_states) - S_PLAY_RUN1) < 4) {
             P_SetMobjState(mo, S_PLAY);
         }
 
@@ -557,7 +557,7 @@ void P_PlayerTic(mobj_t* mo) {
 	return;	/* not time to cycle yet */
 
     if (!mo->tics) {
-        st = &states[mo->state->nextstate];
+        st = &original_states[mo->state->nextstate];
         
         mo->state = st;
         mo->tics = st->info_tics;

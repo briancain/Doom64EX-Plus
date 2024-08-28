@@ -1352,7 +1352,10 @@ typedef struct
 	int			misc2;
 } state_t;
 
+extern state_t  original_states[NUMSTATES];
+
 typedef enum {
+	MT_NULL,
 	MT_PLAYER,                // 0
 	MT_PLAYERBOT1,            // 1
 	MT_PLAYERBOT2,            // 2
@@ -1536,6 +1539,23 @@ typedef enum {
 	NUMMOBJTYPES
 } mobjtype_t;
 
+typedef enum {
+	IG_DEFAULT,
+	IG_END
+} infighting_group_t;
+
+typedef enum {
+	PG_GROUPLESS = -1,
+	PG_DEFAULT,
+	PG_BARON,
+	PG_END
+} projectile_group_t;
+
+typedef enum {
+	SG_DEFAULT,
+	SG_END
+} splash_group_t;
+
 typedef struct {
 	int    doomednum;
 	int    spawnstate;
@@ -1562,11 +1582,31 @@ typedef struct {
 	int    palette;
 	int    alpha;
 	int    raisestate;
+
+	// mbf21
+	int flags2;
+	int infighting_group;
+	int projectile_group;
+	int splash_group;
+	int ripsound;
+	int altspeed;
+	int meleerange;
+
+	// DEHEXTRA
+	mobjtype_t droppeditem; // mobj to drop after death
 } mobjinfo_t;
 
-extern state_t states[NUMSTATES];
-extern char* sprnames[NUMSPRITES + 1];
+#define NO_ALTSPEED -1
 
-extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
+extern char*		original_sprnames[];             // 1/17/98 killough
+extern mobjinfo_t	original_mobjinfo[];
+extern state_t		original_states[];
+extern char*		original_sprnames[];
+
+// DSDHacked
+extern mobjinfo_t*	mobjinfo;
+extern state_t*		states;
+extern int			numstates;
+extern char**		sprnames;
 
 #endif

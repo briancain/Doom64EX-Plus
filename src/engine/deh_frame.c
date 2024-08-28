@@ -26,6 +26,7 @@
 #include "deh_io.h"
 #include "deh_main.h"
 #include "deh_mapping.h"
+#include "dsdhacked.h"
 
 DEH_BEGIN_MAPPING(state_mapping, state_t)
   DEH_MAPPING("Sprite number",    sprite)
@@ -60,9 +61,13 @@ static void *DEH_FrameStart(deh_context_t *context, char *line)
                              "problems in Vanilla dehacked.", frame_number);
     }
 
-    state = &states[frame_number];
+    dsdh_EnsureStatesCapacity(frame_number);
+
+    state = &original_states[frame_number];
 
     return state;
+
+    dsdh_FreeTables();
 }
 
 // Simulate a frame overflow: Doom has 967 frames in the states[] array, but
@@ -127,7 +132,7 @@ static void DEH_FrameParseLine(deh_context_t *context, char *line, void *tag)
 
     ivalue = atoi(value);
     
-    if (state == &states[NUMSTATES - 1])
+    if (state == &original_states[NUMSTATES - 1])
     {
         DEH_FrameOverflow(context, variable_name, ivalue);
     }
@@ -145,7 +150,7 @@ static void DEH_FrameSHA1Sum(sha1_context_t *context)
 
     for (i=0; i<NUMSTATES; ++i)
     {
-        DEH_StructSHA1Sum(context, &state_mapping, &states[i]);
+        DEH_StructSHA1Sum(context, &state_mapping, &original_states[i]);
     }
 }
 

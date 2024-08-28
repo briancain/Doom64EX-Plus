@@ -821,7 +821,7 @@ static void P_AlertTaggedMobj(mobj_t* activator, int tid) {
 			continue;
 		}
 
-		st = &states[mo->info->seestate];
+		st = &original_states[mo->info->seestate];
 
 		// 03022014 villsa - handle checks if activator is not a player
 		if (activator->player) {
@@ -2152,15 +2152,15 @@ void P_SpawnSpecials(void) {
 	scrollfrac = 0;
 
 	for (i = 0; i < numspawnlist; i++) {
-		if (spawnlist[i].type == mobjinfo[MT_ITEM_BLUESKULLKEY].doomednum) {
+		if (spawnlist[i].type == original_mobjinfo[MT_ITEM_BLUESKULLKEY].doomednum) {
 			tryopentype[0] = it_blueskull;
 		}
 
-		if (spawnlist[i].type == mobjinfo[MT_ITEM_YELLOWSKULLKEY].doomednum) {
+		if (spawnlist[i].type == original_mobjinfo[MT_ITEM_YELLOWSKULLKEY].doomednum) {
 			tryopentype[1] = it_yellowskull;
 		}
 
-		if (spawnlist[i].type == mobjinfo[MT_ITEM_REDSKULLKEY].doomednum) {
+		if (spawnlist[i].type == original_mobjinfo[MT_ITEM_REDSKULLKEY].doomednum) {
 			tryopentype[2] = it_redskull;
 		}
 	}

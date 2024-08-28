@@ -519,8 +519,8 @@ static CMD(SpawnThing) {
 	}
 
 	player = &players[consoleplayer];
-	x = player->mo->x + FixedMul(INT2F(64) + mobjinfo[id].radius, dcos(player->mo->angle));
-	y = player->mo->y + FixedMul(INT2F(64) + mobjinfo[id].radius, dsin(player->mo->angle));
+	x = player->mo->x + FixedMul(INT2F(64) + original_mobjinfo[id].radius, dcos(player->mo->angle));
+	y = player->mo->y + FixedMul(INT2F(64) + original_mobjinfo[id].radius, dsin(player->mo->angle));
 	z = player->mo->z;
 
 	thing = P_SpawnMobj(x, y, z, id);
@@ -1684,24 +1684,24 @@ void G_SetFastParms(int fast_pending) {
 		/* only change if necessary */
 		if ((fast = fast_pending)) {
 			for (i = S_SARG_STND; i <= S_SARG_PAIN2; i++) {
-				if (states[i].info_tics != 1) { // killough 4/10/98
-					states[i].info_tics >>= 1;    // don't change 1->0 since it causes cycles
+				if (original_states[i].info_tics != 1) { // killough 4/10/98
+					original_states[i].info_tics >>= 1;    // don't change 1->0 since it causes cycles
 				}
 			}
-			mobjinfo[MT_PROJ_BRUISER1].speed = 20 * FRACUNIT;
-			mobjinfo[MT_PROJ_HEAD].speed = 30 * FRACUNIT;
-			mobjinfo[MT_PROJ_IMP2].speed = 35 * FRACUNIT;
-			mobjinfo[MT_PROJ_IMP1].speed = 20 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_BRUISER1].speed = 20 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_HEAD].speed = 30 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_IMP2].speed = 35 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_IMP1].speed = 20 * FRACUNIT;
 		}
 		else {
 			for (i = S_SARG_STND; i <= S_SARG_PAIN2; i++) {
-				states[i].info_tics <<= 1;
+				original_states[i].info_tics <<= 1;
 			}
 
-			mobjinfo[MT_PROJ_BRUISER1].speed = 15 * FRACUNIT;
-			mobjinfo[MT_PROJ_HEAD].speed = 20 * FRACUNIT;
-			mobjinfo[MT_PROJ_IMP2].speed = 20 * FRACUNIT;
-			mobjinfo[MT_PROJ_IMP1].speed = 10 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_BRUISER1].speed = 15 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_HEAD].speed = 20 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_IMP2].speed = 20 * FRACUNIT;
+			original_mobjinfo[MT_PROJ_IMP1].speed = 10 * FRACUNIT;
 		}
 	}
 }

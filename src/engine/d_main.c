@@ -67,6 +67,7 @@
 #include "gl_draw.h"
 #include "deh_main.h"
 #include "net_client.h"
+#include "dsdhacked.h"
 
 //
 // D_DoomLoop()
@@ -970,6 +971,9 @@ void D_DoomMain(void) {
 
 	I_Printf("GL_Init: Init OpenGL\n");
 	GL_Init();
+
+	I_Printf("DSDHacked: Init DSDHacked Tables\n");
+	dsdh_InitTables();
 
 	// garbage collection
 	Z_FreeAlloca();

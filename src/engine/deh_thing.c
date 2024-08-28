@@ -71,7 +71,7 @@ static void *DEH_ThingStart(deh_context_t *context, char *line)
         return NULL;
     }
     
-    mobj = &mobjinfo[thing_number];
+    mobj = &original_mobjinfo[thing_number];
     
     return mobj;
 }
@@ -114,7 +114,7 @@ static void DEH_ThingSHA1Sum(sha1_context_t *context)
 
     for (i=0; i<NUMMOBJTYPES; ++i)
     {
-        DEH_StructSHA1Sum(context, &thing_mapping, &mobjinfo[i]);
+        DEH_StructSHA1Sum(context, &thing_mapping, &original_mobjinfo[i]);
     }
 }
 

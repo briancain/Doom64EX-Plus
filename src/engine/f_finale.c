@@ -117,7 +117,7 @@ void F_Start(void) {
 	automapactive = false;
 
 	castnum = 0;
-	caststate = &states[mobjinfo[castorder[castnum].type].seestate];
+	caststate = &original_states[original_mobjinfo[castorder[castnum].type].seestate];
 	casttics = caststate->info_tics;
 	castdeath = false;
 	castframes = 0;
@@ -131,7 +131,7 @@ void F_Start(void) {
 	finalePal.b = 0;
 
 	// hack - force-play seesound from first cast
-	S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
+	S_StartSound(NULL, original_mobjinfo[castorder[castnum].type].seesound);
 }
 
 //
@@ -172,8 +172,8 @@ int F_Ticker(void) {
 
 	if (!castdeath && castdying) {
 		S_StartSound(NULL, sfx_shotgun);
-		S_StartSound(NULL, mobjinfo[castorder[castnum].type].deathsound);
-		caststate = &states[mobjinfo[castorder[castnum].type].deathstate];
+		S_StartSound(NULL, original_mobjinfo[castorder[castnum].type].deathsound);
+		caststate = &original_states[original_mobjinfo[castorder[castnum].type].deathstate];
 		casttics = caststate->info_tics;
 		castframes = 0;
 		castattacking = false;
@@ -201,22 +201,22 @@ int F_Ticker(void) {
 		finalePal.g = 0;
 		finalePal.b = 0;
 
-		if (mobjinfo[castorder[castnum].type].seesound) {
-			S_StartSound(NULL, mobjinfo[castorder[castnum].type].seesound);
+		if (original_mobjinfo[castorder[castnum].type].seesound) {
+			S_StartSound(NULL, original_mobjinfo[castorder[castnum].type].seesound);
 		}
 
-		caststate = &states[mobjinfo[castorder[castnum].type].seestate];
+		caststate = &original_states[original_mobjinfo[castorder[castnum].type].seestate];
 		castframes = 0;
 	}
 	else {
 		// just advance to next state in animation
 
-		if (caststate == &states[S_PLAY_ATK2]) { // gross hack..
+		if (caststate == &original_states[S_PLAY_ATK2]) { // gross hack..
 			goto stopattack;
 		}
 
 		st = caststate->nextstate;
-		caststate = &states[st];
+		caststate = &original_states[st];
 		castframes++;
 
 		// sound hacks
@@ -294,30 +294,30 @@ int F_Ticker(void) {
 		// go into attack frame
 		castattacking = true;
 		if (castonmelee) {
-			caststate = &states[mobjinfo[castorder[castnum].type].meleestate];
+			caststate = &original_states[original_mobjinfo[castorder[castnum].type].meleestate];
 		}
 		else {
-			caststate = &states[mobjinfo[castorder[castnum].type].missilestate];
+			caststate = &original_states[original_mobjinfo[castorder[castnum].type].missilestate];
 		}
 		castonmelee ^= 1;
 
-		if (caststate == &states[S_NULL]) {
+		if (caststate == &original_states[S_NULL]) {
 			if (castonmelee) {
-				caststate = &states[mobjinfo[castorder[castnum].type].meleestate];
+				caststate = &original_states[original_mobjinfo[castorder[castnum].type].meleestate];
 			}
 			else {
-				caststate = &states[mobjinfo[castorder[castnum].type].missilestate];
+				caststate = &original_states[original_mobjinfo[castorder[castnum].type].missilestate];
 			}
 		}
 	}
 
 	if (castattacking) {
 		if (castframes == 24 ||
-			caststate == &states[mobjinfo[castorder[castnum].type].seestate]) {
+			caststate == &original_states[original_mobjinfo[castorder[castnum].type].seestate]) {
 		stopattack:
 			castattacking = false;
 			castframes = 0;
-			caststate = &states[mobjinfo[castorder[castnum].type].seestate];
+			caststate = &original_states[original_mobjinfo[castorder[castnum].type].seestate];
 		}
 	}
 
@@ -344,7 +344,7 @@ void F_Drawer(void) {
 		160,
 		180,
 		1.0f,
-		mobjinfo[castorder[castnum].type].palette,
+		original_mobjinfo[castorder[castnum].type].palette,
 		D_RGBA(finalePal.r, finalePal.g, finalePal.b, finalePal.a)
 	);
 }

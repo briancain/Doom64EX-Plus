@@ -94,6 +94,7 @@
     <ClCompile Include="..\src\engine\w_merge.c" />
     <ClCompile Include="..\src\engine\w_wad.c" />
     <ClCompile Include="..\src\engine\z_zone.c" />
+    <ClCompile Include="..\src\engine\dsdhacked.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\engine\deh_str.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\src\engine\w_merge.h" />
     <ClInclude Include="..\src\engine\w_wad.h" />
     <ClInclude Include="..\src\engine\z_zone.h" />
+    <ClInclude Include="..\src\engine\dsdhacked.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\engine\doom64ex-plus.rc" />

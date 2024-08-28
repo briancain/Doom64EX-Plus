@@ -1602,7 +1602,7 @@ void A_PainShootSkull(mobj_t* actor, angle_t angle) {
 
 	an = angle >> ANGLETOFINESHIFT;
 
-	prestep = 4 * FRACUNIT + 3 * (actor->info->radius + mobjinfo[MT_SKULL].radius) / 2;
+	prestep = 4 * FRACUNIT + 3 * (actor->info->radius + original_mobjinfo[MT_SKULL].radius) / 2;
 
 	x = actor->x + FixedMul(prestep, finecosine[an]);
 	y = actor->y + FixedMul(prestep, finesine[an]);
@@ -2042,7 +2042,7 @@ boolean PIT_VileCheck(mobj_t* thing)
 	if (thing->info->raisestate == S_NULL)
 		return true;	// monster doesn't have a raise state
 
-	maxdist = thing->info->radius + mobjinfo[MT_VILE].radius;
+	maxdist = thing->info->radius + original_mobjinfo[MT_VILE].radius;
 
 	if (abs(thing->x - viletryx) > maxdist
 		|| abs(thing->y - viletryy) > maxdist)

@@ -119,7 +119,7 @@ void P_SetPsprite (player_t* player, int position, statenum_t stnum)
 			break;		/* object removed itself */
 		}
 
-		state = &states[stnum];
+		state = &original_states[stnum];
 		psp->state = state;
 		psp->tics = state->info_tics;  /* could be 0 */
 
@@ -706,7 +706,7 @@ void A_FireCGun(player_t* player, pspdef_t* psp) {
 		player->psprites[ps_flash].alpha = 160;
 
 		P_SetPsprite(player, ps_flash,
-			weaponinfo[player->readyweapon].flashstate + psp->state - &states[S_CHAING1]);
+			weaponinfo[player->readyweapon].flashstate + psp->state - &original_states[S_CHAING1]);
 
 		player->recoilpitch = RECOILPITCH;
 	}
